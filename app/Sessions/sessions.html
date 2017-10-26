@@ -1,0 +1,15 @@
+<!-- In the parent div - identify the controller with ng-controller -->
+<div ng-controller="SessionsController">
+  <!-- Use single data scope items like this -->
+  <h1>{{title}}</h1>
+
+  <!-- For data arrays defined in the scope, use ng-repeat to define the indexed item in the already defined items array -->
+  <div ng-repeat="item in items">
+    <!-- Now that you're referencing a specific item, you can pull data objects from that item -->
+    <h2>{{item.name}}</h2>
+    <p>ID: {{item.id}}</p>
+    <h3>Likes: {{item.likes}}</h3>
+    <!-- Call functions defined in the scope using ng-click -->
+    <a ng-click="likeFunction($index)" href="">Like</a>
+  </div>
+</div>

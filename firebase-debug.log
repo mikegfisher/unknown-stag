@@ -1,0 +1,36 @@
+[debug] [2017-10-26T03:41:35.190Z] ----------------------------------------------------------------------
+[debug] [2017-10-26T03:41:35.192Z] Command:       /usr/local/bin/node /usr/local/bin/firebase serve
+[debug] [2017-10-26T03:41:35.193Z] CLI Version:   3.9.2
+[debug] [2017-10-26T03:41:35.193Z] Platform:      darwin
+[debug] [2017-10-26T03:41:35.193Z] Node Version:  v6.11.2
+[debug] [2017-10-26T03:41:35.194Z] Time:          Wed Oct 25 2017 20:41:35 GMT-0700 (PDT)
+[debug] [2017-10-26T03:41:35.194Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2017-10-26T03:41:35.212Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2017-10-26T03:41:35.212Z] > authorizing via signed-in user
+[debug] [2017-10-26T03:41:35.214Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2017-10-26T03:41:35.214Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token { refresh_token: '1/eIKJaE-jGRMA1HuaPt-g9ACmiV8m_whOaIG-Xe6x4nc',
+  client_id: '563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com',
+  client_secret: 'j9iVZfS8kkCEFUPaAeJV0sAi',
+  grant_type: 'refresh_token',
+  scope: 'email https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/cloudplatformprojects.readonly https://www.googleapis.com/auth/firebase openid' } 
+ Wed Oct 25 2017 20:41:35 GMT-0700 (PDT)
+[debug] [2017-10-26T03:41:35.506Z] <<< HTTP RESPONSE 200
+[debug] [2017-10-26T03:41:35.517Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/unknown-stag  
+ Wed Oct 25 2017 20:41:35 GMT-0700 (PDT)
+[debug] [2017-10-26T03:41:36.326Z] <<< HTTP RESPONSE 200
+[debug] [2017-10-26T03:41:36.327Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/unknown-stag/tokens  
+ Wed Oct 25 2017 20:41:36 GMT-0700 (PDT)
+[debug] [2017-10-26T03:41:36.925Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Serving from '/Users/michaelfisher/Documents/Dev/angular-seed'...
+[info] 
+[debug] [2017-10-26T03:41:36.928Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/unknown-stag  
+ Wed Oct 25 2017 20:41:36 GMT-0700 (PDT)
+[debug] [2017-10-26T03:41:37.658Z] <<< HTTP RESPONSE 200
+[debug] [2017-10-26T03:41:37.659Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/252990311284/clients/_:getWebAppConfig  
+ Wed Oct 25 2017 20:41:37 GMT-0700 (PDT)
+[debug] [2017-10-26T03:41:38.285Z] <<< HTTP RESPONSE 200
+[info] i  hosting: Serving hosting files from: app
+[info] ✔  hosting: Local server: http://localhost:5000
+
