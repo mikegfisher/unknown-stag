@@ -6,6 +6,7 @@ app.controller('HomeController', ['$scope', function($scope) {
   // Check login
 if(firebase.auth().currentUser) {
   $("#login").hide();
+  $("#logout").show();
 } else {
   $("#login").show();
 }

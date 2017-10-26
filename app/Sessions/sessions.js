@@ -1,22 +1,23 @@
 // Define the controller for this view
 app.controller('SessionsController', ['$scope', function ($scope) {
+  // Redirect non-logged in users back to home
+  redirect();
+  
   // For single data items, add them to the scope like this
-  $scope.title = 'Angular-Web-App-Seed';
+  $scope.name = firebase.auth().currentUser.email;
   // For arrays of data, add them to the scope like this
   $scope.items = [
     {
-      id: 1,
-      name: 'Sample 1',
-      likes: 0
+      title: 'Sprint Poker Session 4',
+      description: 'Planning session for Sprint 4. Submitting hours.'
     },
     {
-      id: 2,
-      name: 'Sample 2',
-      likes: 0
+      title: 'Project Poker Session - Oslo',
+      description: 'Planning session for the Oslo project. Submitting story points.'
     }
   ];
   // Add functions to the scope like this
   $scope.likeFunction = function (index) {
-    $scope.items[index].likes += 1;
+    //$scope.items[index].likes += 1;
   }
 }]);

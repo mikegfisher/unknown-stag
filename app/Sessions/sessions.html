@@ -1,15 +1,26 @@
 <!-- In the parent div - identify the controller with ng-controller -->
-<div ng-controller="SessionsController">
-  <!-- Use single data scope items like this -->
-  <h1>{{title}}</h1>
+<div ng-controller="SessionsController" class="container">
+  <h1>Hey {{name}}!</h1>
 
-  <!-- For data arrays defined in the scope, use ng-repeat to define the indexed item in the already defined items array -->
   <div ng-repeat="item in items">
-    <!-- Now that you're referencing a specific item, you can pull data objects from that item -->
-    <h2>{{item.name}}</h2>
-    <p>ID: {{item.id}}</p>
-    <h3>Likes: {{item.likes}}</h3>
-    <!-- Call functions defined in the scope using ng-click -->
-    <a ng-click="likeFunction($index)" href="">Like</a>
+    <div class="card">
+      <div class="card-image waves-effect waves-block waves-light">
+        
+      </div>
+      <div class="card-content">
+        <span class="card-title activator grey-text text-darken-4">{{item.title}}
+          <i class="material-icons right">more_vert</i>
+        </span>
+        <p>
+          <a href="#"><i class="tiny material-icons">insert_link</i>&nbsp;&nbsp;Share Link</a>
+        </p>
+      </div>
+      <div class="card-reveal">
+        <span class="card-title grey-text text-darken-4">{{item.title}}
+          <i class="material-icons right">close</i>
+        </span>
+        <p>{{item.description}}</p>
+      </div>
+    </div>
   </div>
 </div>

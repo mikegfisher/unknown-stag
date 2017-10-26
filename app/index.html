@@ -27,6 +27,7 @@
 
 <body ng-app="myApp">
   <!-- Header -->
+  <header>
   <div class="navbar-fixed">
     <nav>
       <div class="nav-wrapper">
@@ -54,9 +55,9 @@
       </div>
     </nav>
   </div>
-
+</header>
   <!-- View -->
-  <div ng-view></div>
+  <main><div ng-view></div></main>
 
   <!-- Footer -->
   <footer class="page-footer">
@@ -111,7 +112,8 @@
 
   <!-- Scripts -->
   <script type="text/javascript" src="scripts/auth.js"></script>
-  <script type="text/javascript" src="scripts/write.js"></script>
+  <script type="text/javascript" src="scripts/redirect.js"></script>
+  <script type="text/javascript" src="scripts/refactor.js"></script>
   <script type="text/javascript" src="app.js"></script>
   <script type="text/javascript" src="Home/home.js"></script>
   <script type="text/javascript" src="Sessions/sessions.js"></script>
