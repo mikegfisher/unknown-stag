@@ -1,5 +1,5 @@
 // Declare the app variable that will be used be each controller
-var app = angular.module("myApp", ['ngRoute']);
+var app = angular.module("myApp", ["ngRoute","firebase"]);
 // Configure the routing for each view
 app.config(function ($routeProvider) {
   $routeProvider
