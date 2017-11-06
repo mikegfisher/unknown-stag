@@ -11,6 +11,14 @@ app.config(function ($routeProvider) {
       controller: 'SessionsController',
       templateUrl: 'Sessions/sessions.html'
     })
+    .when('/session', {
+      controller: 'SessionController',
+      templateUrl: 'Session/session.html'
+    })
+    .when('/issue', {
+      controller: 'IssueController',
+      templateUrl: 'Issue/issue.html'
+    })
     .otherwise({
       redirectTo: '/'
     });

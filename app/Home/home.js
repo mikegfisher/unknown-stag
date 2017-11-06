@@ -1,7 +1,7 @@
 
 
 app.controller('HomeController', ['$scope', function($scope) { 
-  $scope.welcomeMessage = 'Welcome to the angular web app seed!';
+  //$scope.welcomeMessage = 'Welcome to the ';
 
   // Check login
 if(firebase.auth().currentUser) {

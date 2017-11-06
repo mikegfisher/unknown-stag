@@ -1,19 +1,18 @@
 // Define the controller for this view
-app.controller('SessionController',
+app.controller('IssueController',
   function ($scope, $firebaseObject) {
     var sessionUID = getQueryStringParameter("uid");
-    var ref = firebase.database().ref().child("issues").orderByChild("session_uid").equalTo(sessionUID);
+    var ref = firebase.database().ref().child("estimates/"+sessionUID);
     var syncObject = $firebaseObject(ref);
-    syncObject.$bindTo($scope, "issues");
+    syncObject.$bindTo($scope, "estimates");
 
     // Setup buttons
-    document.querySelector("#btnIssue").addEventListener("click", submitIssue);
+    document.querySelector("#btnEstimate").addEventListener("click", submitEstimate);
   }
 );
 
-function submitIssue() {
-  createIssue(getQueryStringParameter("uid"), document.querySelector("#new_issue").value);
-  document.querySelector("#new_issue").value = "";
+function submitEstimate() {
+  createEstimate(getQueryStringParameter("uid"), document.querySelector("#new_estimate").value);
 }
 
 function getQueryStringParameter(paramToRetrieve) {

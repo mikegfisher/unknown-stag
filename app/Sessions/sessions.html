@@ -21,8 +21,12 @@
         <span class="card-title activator grey-text text-darken-4">{{item.title}}
           <i class="material-icons right">more_vert</i>
         </span>
-        <p>
-          <a href="#/session?uid={{item.id}}">
+        <div class="chip">
+            <img src="{{item.creator_photoURL}}" alt="Contact Person">
+            {{item.creator_displayName}}
+          </div>
+        <p style="float:right">
+          <a href="#/session?uid={{item.uid}}">
             <i class="tiny material-icons">insert_link</i>&nbsp;&nbsp;Share Link</a>
         </p>
       </div>

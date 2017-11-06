@@ -6,6 +6,8 @@
         // whose uid must exactly match the key ($user_id)
         ".write": "$user_id === auth.uid"
       }
-    }
+    },
+      ".read": "auth !== null",
+        ".write": "auth !== null"
   }
 }
