@@ -8,6 +8,7 @@ app.controller('IssueController',
 
     // Setup buttons
     document.querySelector("#btnEstimate").addEventListener("click", submitEstimate);
+    document.querySelector("#backLink").href="#/session?uid=" + getQueryStringParameter("session");;
   }
 );
 
