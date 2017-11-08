@@ -8,6 +8,7 @@ app.controller('IssueController',
 
     // Setup buttons
     document.querySelector("#btnEstimate").addEventListener("click", submitEstimate);
+    document.querySelector("#estimatesCard").addEventListener("click", generateAverage);
     document.querySelector("#backLink").href="#/session?uid=" + getQueryStringParameter("session");;
   }
 );
@@ -15,7 +16,20 @@ app.controller('IssueController',
 function submitEstimate() {
   createEstimate(getQueryStringParameter("uid"), document.querySelector("#new_estimate").value);
 }
-
+function generateAverage() {
+  var est = document.querySelectorAll("#estimate");
+  var values = [];
+  var sum = 0;
+  for (i = 0; i < est.length; i++) { 
+    values.push(Number(est[i].innerHTML));
+    sum += Number(values[i]);
+}
+  var avg = sum / values.length;
+  document.querySelector("#average").innerHTML = avg;
+  console.log(values);
+  console.log(sum);
+  console.log(avg);
+}
 function getQueryStringParameter(paramToRetrieve) {
   var params = document.URL.split("?")[1].split("&");
   for (var ii in params) {

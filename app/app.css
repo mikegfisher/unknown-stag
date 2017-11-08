@@ -25,3 +25,6 @@ input.valid:not([type]), input.valid:not([type]):focus, input[type=text].valid:n
   -webkit-box-shadow: 0 1px 0 0 #E9963E;
   box-shadow: 0 1px 0 0 #E9963E;
 }
+.estimate {
+  font-weight: bold;
+}

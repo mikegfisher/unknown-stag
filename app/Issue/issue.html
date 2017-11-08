@@ -16,7 +16,7 @@
     </form>
   </div>
 
-      <div class="card">
+      <div class="card" id="estimatesCard">
           <div class="card-image waves-effect waves-block waves-light">
             <img class="activator" src="images/office.jpg">
           </div>
@@ -24,18 +24,18 @@
             <span class="card-title activator grey-text text-darken-4">Click to show estimates<i class="material-icons right">more_vert</i></span>
             <div ng-repeat="estimate in estimates"> 
                 <div class="chip">
-                    <img src="{{estimate.creator_photoURL}}" alt="Contact Person">
-                    ?
+                    <img src="{{estimate.creator_photoURL}}" alt="Contact Person" />
+                    {{estimate.creator_displayName}}
                   </div>
         
               </div>
           </div>
           <div class="card-reveal">
-            <span class="card-title grey-text text-darken-4">Submitted estimates<i class="material-icons right">close</i></span>
+            <span class="card-title grey-text text-darken-4">Submitted estimates = (avg)&nbsp;<span id="average"></span><i class="material-icons right">close</i></span>
             <div ng-repeat="estimate in estimates"> 
                 <div class="chip">
-                    <img src="{{estimate.creator_photoURL}}" alt="Contact Person">
-                    {{estimate.points}}
+                    <img src="{{estimate.creator_photoURL}}" alt="Contact Person" />
+                    <span id="estimate">{{estimate.points}}</span>
                   </div>
         
               </div>
