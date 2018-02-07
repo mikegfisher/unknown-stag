@@ -50,7 +50,7 @@ class LoginPage extends Component {
       <div>
         <p>{this.state.user}</p>
         <form onSubmit={this.logInWithGoogle.bind(this)}>
-          <input type="submit" value="Log in" />
+          <input class="btn waves-effect waves-light" type="submit" value="Log in" />
         </form>
       </div>
     );
