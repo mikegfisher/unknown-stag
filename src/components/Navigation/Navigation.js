@@ -5,12 +5,15 @@ import * as routes from '../../constants/routes';
 
 const Navigation = () =>
   <div>
-    <ul>
-      <li><Link to={routes.LOGIN}>Log in</Link></li>
-      <li><Link to={routes.LANDING}>Landing</Link></li>
-      <li><Link to={routes.HOME}>Home</Link></li>
-      <li><Link to={routes.ACCOUNT}>Account</Link></li>
-    </ul>
+    <nav>
+    <div class="nav-wrapper">
+      <Link class="brand-logo" to={routes.LANDING}>Unknown Stag</Link>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li><Link to={routes.LOGIN}>Log in</Link></li>
+        <li><Link to={routes.SESSIONS}>Sessions</Link></li>
+      </ul>
+    </div>
+  </nav>
   </div>
 
 export default Navigation;
