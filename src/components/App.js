@@ -25,30 +25,27 @@ class App extends Component {
   render() {
     return (
       <div>
-      <Router>
-    <div>
-      <Navigation />
-
-      <Route
-        exact path={routes.LANDING}
-        component={() => <LandingPage />}
-      />
-      <Route
-        exact path={routes.LOGIN}
-        component={() => <LoginPage />}
-      />
-      <Route
-        exact path={routes.SESSIONS}
-        component={() => <SessionsPage />}
-      />
-      <Route
-        exact path={routes.SESSION}
-        component={() => <SessionPage />}
-      />
-    </div>
-  </Router>
-
-      
+        <Router>
+          <div>
+            <Navigation />
+            <Route
+              exact path={routes.LANDING}
+              component={() => <LandingPage />}
+            />
+            <Route
+              exact path={routes.LOGIN}
+              component={() => <LoginPage />}
+            />
+            <Route
+              exact path={routes.SESSIONS}
+              component={() => <SessionsPage />}
+            />
+            <Route
+              exact path={routes.SESSION}
+              component={() => <SessionPage />}
+            />
+          </div>
+        </Router>
       </div>
     );
   }

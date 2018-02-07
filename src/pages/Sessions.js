@@ -19,7 +19,7 @@ class SessionsPage extends Component {
                 dbRef.on('child_added', snapshot => {
                     let session = {
                         title: snapshot.val().title,
-                        id: snapshot.key, 
+                        id: snapshot.key,
                         url: "/session?uid=" + snapshot.key
                     };
                     this.setState({ sessions: [session].concat(this.state.sessions) });
@@ -57,10 +57,10 @@ class SessionsPage extends Component {
                             <ul class="collection with-header">
                                 <li class="collection-header"><h4>My Sessions</h4></li>
                                 {
-                                    this.state.sessions.map( session => 
+                                    this.state.sessions.map(session =>
                                         <li class="collection-item" key={session.id}>
                                             <div>{session.title}
-                                              <a href={session.url} title="go to session" class="secondary-content"><i class="material-icons">arrow_forward</i></a>
+                                                <a href={session.url} title="go to session" class="secondary-content"><i class="material-icons">arrow_forward</i></a>
                                             </div>
                                         </li>
                                     )
