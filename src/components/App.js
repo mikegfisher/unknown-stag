@@ -11,6 +11,7 @@ import Navigation from './Navigation/Navigation';
 import LandingPage from '../pages/Landing';
 import LoginPage from '../pages/Login';
 import SessionsPage from '../pages/Sessions';
+import SessionPage from '../pages/Session';
 
 /* import routes */
 import * as routes from '../constants/routes';
@@ -39,6 +40,10 @@ class App extends Component {
       <Route
         exact path={routes.SESSIONS}
         component={() => <SessionsPage />}
+      />
+      <Route
+        exact path={routes.SESSION}
+        component={() => <SessionPage />}
       />
     </div>
   </Router>

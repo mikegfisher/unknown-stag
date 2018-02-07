@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-
 import fire from '../fire';
 
 class SessionsPage extends Component {
@@ -21,10 +20,10 @@ class SessionsPage extends Component {
                     let session = {
                         title: snapshot.val().title,
                         id: snapshot.key, 
-                        url: "/session?=" + snapshot.key
+                        url: "/session?uid=" + snapshot.key
                     };
                     this.setState({ sessions: [session].concat(this.state.sessions) });
-                })
+                });
             } else {
                 // not logged in
                 this.setState({ sessions: [{ id: 1, title: "Please log in" }] });
