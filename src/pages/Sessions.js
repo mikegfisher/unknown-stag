@@ -28,7 +28,6 @@ class SessionsPage extends Component {
                 // not logged in
                 this.setState({ sessions: [{ id: 1, title: "Please log in" }] });
             }
-
         });
     }
     addSession(e) {
@@ -52,7 +51,7 @@ class SessionsPage extends Component {
                     <div class="row">
                         <div class="input-field col s6">
                             <input placeholder="Create a new session" id="new_session" type="text" class="validate" ref={e1 => this.inputE1 = e1} />
-                            <input type="submit" />
+                            <input class="btn waves-effect waves-light" type="submit" />
                         </div>
                         <div class="input-field col s6">
                             <ul class="collection with-header">

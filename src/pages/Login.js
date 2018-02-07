@@ -6,9 +6,7 @@ import fire from '../fire';
 class LoginPage extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-
-    };
+    this.state = {};
   }
   componentWillMount() {
 
@@ -50,8 +48,9 @@ class LoginPage extends Component {
   render() {
     return (
       <div>
+        <p>{this.state.user}</p>
         <form onSubmit={this.logInWithGoogle.bind(this)}>
-          <input type="submit" />
+          <input type="submit" value="Log in" />
         </form>
       </div>
     );
