@@ -6,7 +6,7 @@ class SessionsPage extends Component {
         super(props);
         this.state = {
             sessions: []
-        }
+        };
         this.removeSession = this.removeSession.bind(this);
     }
     componentWillMount() {
@@ -34,20 +34,21 @@ class SessionsPage extends Component {
     addSession(e) {
         e.preventDefault();
         let newSession = fire.database().ref('sessions').push();
-        newSession.set({
+        return newSession.set({
             uid: newSession.key,
             title: this.inputE1.value,
             description: '',
             creator_photoURL: fire.auth().currentUser.photoURL,
             creator_displayName: fire.auth().currentUser.displayName,
             creator_uid: fire.auth().currentUser.uid
+        }).then(() => {
+            this.inputE1.value = '';
         });
-        this.inputE1.value = '';
     }
     removeSession(e, id) {
         console.log('removing session');
         let ref = fire.database().ref('sessions');
-        ref.child(id).remove();
+        return ref.child(id).remove();
     }
     render() {
         return (
