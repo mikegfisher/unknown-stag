@@ -46,21 +46,21 @@ class SessionsPage extends Component {
 
     render() {
         return (
-            <div class="row">
-                <form class="col s12" onSubmit={this.addSession.bind(this)}>
-                    <div class="row">
-                        <div class="input-field col s6">
-                            <input placeholder="Create a new session" id="new_session" type="text" class="validate" ref={e1 => this.inputE1 = e1} />
-                            <input class="btn waves-effect waves-light" type="submit" />
+            <div className="row">
+                <form className="col s12" onSubmit={this.addSession.bind(this)}>
+                    <div className="row">
+                        <div className="input-field col s6">
+                            <input placeholder="Create a new session" id="new_session" type="text" className="validate" ref={e1 => this.inputE1 = e1} />
+                            <input className="btn waves-effect waves-light" type="submit" />
                         </div>
-                        <div class="input-field col s6">
-                            <ul class="collection with-header">
-                                <li class="collection-header"><h4>My Sessions</h4></li>
+                        <div className="input-field col s6">
+                            <ul className="collection with-header">
+                                <li className="collection-header"><h4>My Sessions</h4></li>
                                 {
                                     this.state.sessions.map(session =>
-                                        <li class="collection-item" key={session.id}>
+                                        <li className="collection-item" key={session.id}>
                                             <div>{session.title}
-                                                <a href={session.url} title="go to session" class="secondary-content"><i class="material-icons">arrow_forward</i></a>
+                                                <a href={session.url} title="go to session" className="secondary-content"><i className="material-icons">arrow_forward</i></a>
                                             </div>
                                         </li>
                                     )
