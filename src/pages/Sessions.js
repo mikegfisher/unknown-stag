@@ -7,6 +7,7 @@ class SessionsPage extends Component {
         this.state = {
             sessions: []
         }
+        this.removeSession = this.removeSession.bind(this);
     }
     componentWillMount() {
         // Check to see if the user is logged in
@@ -43,7 +44,11 @@ class SessionsPage extends Component {
         });
         this.inputE1.value = '';
     }
-
+    removeSession(e, id) {
+        console.log('removing session');
+        let ref = fire.database().ref('sessions');
+        ref.child(id).remove();
+    }
     render() {
         return (
             <div className="row">
@@ -61,6 +66,7 @@ class SessionsPage extends Component {
                                         <li className="collection-item" key={session.id}>
                                             <div>{session.title}
                                                 <a href={session.url} title="go to session" className="secondary-content"><i className="material-icons">arrow_forward</i></a>
+                                                <a href="#" onClick={(e) => this.removeSession(e, session.id)} title="delete session" id={session.id} className="secondary-content"><i className="material-icons">cancel</i></a>
                                             </div>
                                         </li>
                                     )
