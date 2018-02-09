@@ -6,7 +6,7 @@ class SessionsPage extends Component {
         super(props);
         this.state = {
             sessions: {}
-        }
+        };
         this.removeSession = this.removeSession.bind(this);
     }
     componentWillMount() {
@@ -15,7 +15,7 @@ class SessionsPage extends Component {
             let userId, dbRef;
             if (!user) {
                 // not logged in
-                this.setState({sessions: [{id: 1, title: "Please log in"}]});
+                this.setState({sessions: {id: 1, title: "Please log in."}});
                 return;
             }
             // logged in
@@ -42,15 +42,16 @@ class SessionsPage extends Component {
     addSession(e) {
         e.preventDefault();
         let newSession = fire.database().ref('sessions').push();
-        newSession.set({
+        return newSession.set({
             uid: newSession.key,
             title: this.inputE1.value,
             description: '',
             creator_photoURL: fire.auth().currentUser.photoURL,
             creator_displayName: fire.auth().currentUser.displayName,
             creator_uid: fire.auth().currentUser.uid
+        }).then(() => {
+            this.inputE1.value = '';
         });
-        this.inputE1.value = '';
     }
     removeSession(e, id) {
         console.log('removing session');
@@ -64,22 +65,22 @@ class SessionsPage extends Component {
     }
     render() {
         return (
-            <div class="row">
-                <form class="col s12" onSubmit={this.addSession.bind(this)}>
-                    <div class="row">
-                        <div class="input-field col s6">
-                            <input placeholder="Create a new session" id="new_session" type="text" class="validate" ref={e1 => this.inputE1 = e1} />
-                            <input class="btn waves-effect waves-light" type="submit" />
+            <div className="row">
+                <form className="col s12" onSubmit={this.addSession.bind(this)}>
+                    <div className="row">
+                        <div className="input-field col s6">
+                            <input placeholder="Create a new session" id="new_session" type="text" className="validate" ref={e1 => this.inputE1 = e1} />
+                            <input className="btn waves-effect waves-light" type="submit" />
                         </div>
-                        <div class="input-field col s6">
-                            <ul class="collection with-header">
-                                <li class="collection-header"><h4>My Sessions</h4></li>
+                        <div className="input-field col s6">
+                            <ul className="collection with-header">
+                                <li className="collection-header"><h4>My Sessions</h4></li>
                                 {
                                     Object.values(this.state.sessions).map(session =>
                                         <li class="collection-item" key={session.id}>
                                             <div>{session.title}
-                                                <a href={session.url} title="go to session" class="secondary-content"><i class="material-icons">arrow_forward</i></a>
-                                                <a href="#" onClick={(e) => this.removeSession(e, session.id)} title="delete session" id={session.id} class="secondary-content"><i class="material-icons">cancel</i></a>
+                                                <a href={session.url} title="go to session" className="secondary-content"><i className="material-icons">arrow_forward</i></a>
+                                                <a href="#" onClick={(e) => this.removeSession(e, session.id)} title="delete session" id={session.id} className="secondary-content"><i className="material-icons">cancel</i></a>
                                             </div>
                                         </li>
                                     )
