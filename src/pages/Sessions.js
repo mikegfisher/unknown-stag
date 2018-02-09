@@ -25,6 +25,14 @@ class SessionsPage extends Component {
                     };
                     this.setState({ sessions: [session].concat(this.state.sessions) });
                 });
+                dbRef.on('child_removed', snapshot => {
+                    let session = {
+                        title: snapshot.val().title,
+                        id: snapshot.key,
+                        url: "/session?uid=" + snapshot.key
+                    };
+                    this.setState({ sessions: this.state.sessions.splice(this.state.sessions.indexOf(session),1) });
+                });
             } else {
                 // not logged in
                 this.setState({ sessions: [{ id: 1, title: "Please log in" }] });
@@ -48,7 +56,12 @@ class SessionsPage extends Component {
     removeSession(e, id) {
         console.log('removing session');
         let ref = fire.database().ref('sessions');
-        return ref.child(id).remove();
+        ref.child(id).remove().then(() => {
+            
+            console.log('done');
+        }, (error) => {
+            console.log(error);
+        });
     }
     render() {
         return (
