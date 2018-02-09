@@ -5,7 +5,7 @@ class SessionsPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            sessions: []
+            sessions: {}
         }
         this.removeSession = this.removeSession.bind(this);
     }
@@ -13,30 +13,30 @@ class SessionsPage extends Component {
         // Check to see if the user is logged in
         fire.auth().onAuthStateChanged((user) => {
             let userId, dbRef;
-            if (user) {
-                // logged in
-                userId = fire.auth().currentUser.uid;
-                dbRef = fire.database().ref('sessions').orderByChild("creator_uid").equalTo(userId);
-                dbRef.on('child_added', snapshot => {
-                    let session = {
-                        title: snapshot.val().title,
-                        id: snapshot.key,
-                        url: "/session?uid=" + snapshot.key
-                    };
-                    this.setState({ sessions: [session].concat(this.state.sessions) });
-                });
-                dbRef.on('child_removed', snapshot => {
-                    let session = {
-                        title: snapshot.val().title,
-                        id: snapshot.key,
-                        url: "/session?uid=" + snapshot.key
-                    };
-                    this.setState({ sessions: this.state.sessions.splice(this.state.sessions.indexOf(session),1) });
-                });
-            } else {
+            if (!user) {
                 // not logged in
-                this.setState({ sessions: [{ id: 1, title: "Please log in" }] });
+                this.setState({sessions: [{id: 1, title: "Please log in"}]});
+                return;
             }
+            // logged in
+            userId = fire.auth().currentUser.uid;
+            dbRef = fire.database().ref('sessions').orderByChild("creator_uid").equalTo(userId);
+            dbRef.on('child_added', snapshot => {
+                let session = {
+                    title: snapshot.val().title,
+                    id: snapshot.key,
+                    url: "/session?uid=" + snapshot.key
+                };
+                let sessions = this.state.sessions;
+                sessions[snapshot.key] = session;
+                this.setState({ sessions });
+            });
+            dbRef.on('child_removed', snapshot => {
+                let sessions = this.state.sessions;
+                delete sessions[snapshot.key];
+                console.log(Object.values(sessions));
+                this.setState({ sessions });
+            });
         });
     }
     addSession(e) {
@@ -75,7 +75,7 @@ class SessionsPage extends Component {
                             <ul class="collection with-header">
                                 <li class="collection-header"><h4>My Sessions</h4></li>
                                 {
-                                    this.state.sessions.map(session =>
+                                    Object.values(this.state.sessions).map(session =>
                                         <li class="collection-item" key={session.id}>
                                             <div>{session.title}
                                                 <a href={session.url} title="go to session" class="secondary-content"><i class="material-icons">arrow_forward</i></a>
