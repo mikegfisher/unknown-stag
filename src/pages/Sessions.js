@@ -80,7 +80,7 @@ class SessionsPage extends Component {
                                     <li className="collection-header"><h4>Recent Sessions</h4></li>
                                     {
                                         Object.values(this.state.sessions).map(session =>
-                                            <li class="collection-item" key={session.id}>
+                                            <li className="collection-item" key={session.id}>
                                                 <div>{session.title}
                                                     <a href={session.url} title="go to session" className="secondary-content"><i className="material-icons">arrow_forward</i></a>
                                                     <a href="" onClick={(e) => this.removeSession(e, session.id)} title="delete session" id={session.id} className="secondary-content"><i className="material-icons">delete_forever</i></a>
