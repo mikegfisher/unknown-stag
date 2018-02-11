@@ -18,14 +18,16 @@ class LogIn extends Component {
             }
         });
     }
-    logInWithGoogle() {
+    logInWithGoogle(e) {
+        console.log('logging in');
+        e.preventDefault();
         const provider = new firebase.auth.GoogleAuthProvider();
         fire.auth().signInWithPopup(provider).then(function (result) {
             console.log('Signed in with Google.');
             const currentUser = fire.auth().currentUser;
             const userId = currentUser.uid;
             return fire.database().ref('/users/' + userId).once('value').then(function (snapshot) {
-                const username = (snapshot.val() && snapshot.val().username) || 'Anonymous';
+                const username = (snapshot.val() && snapshot.val().displayName) || 'Anonymous';
                 // If we have a new user then add a new user object for the account. Otherwise, login.
                 if (username === 'Anonymous') {
                     // Write user object
@@ -57,15 +59,17 @@ class LogIn extends Component {
             <div hidden={this.state.loggedIn} >
                 <div className="row">
                     <div className="col s12 m6">
-                        <div className="card blue-grey darken-1">
+                        <div className="card grey darken-4">
                             <div className="card-content white-text">
                                 <span className="card-title">Welcome</span>
                                 <p>Please log in or sign up with Google to start using Unknown Stag for your points poker session. </p>
+
                             </div>
-                            <div className="card-action">
-                                <a href="" onClick={this.logInWithGoogle.bind(this)}>Log In / Sign Up</a>
-                            </div>
+
                         </div>
+                        <form className="col s12" onSubmit={this.logInWithGoogle.bind(this)}>
+                            <input className="btn waves-effect waves-light red" type="submit" value="Log In / Sign Up" />
+                        </form>
                     </div>
                 </div>
             </div>

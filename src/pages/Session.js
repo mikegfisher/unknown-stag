@@ -85,13 +85,13 @@ class SessionPage extends Component {
         return (
             <div>
                 <div className="row">
-                    <form className="col s12" onSubmit={this.addIssue.bind(this)}>
+                    <form className="col l12 s12" onSubmit={this.addIssue.bind(this)}>
                         <input placeholder="Create a new issue" id="new_issue" type="text" className="validate" ref={e2 => this.inputE2 = e2} />
-                        <input className="btn waves-effect waves-light" type="submit" value="Do it!" />
+                        <input className="btn waves-effect waves-light" type="submit" value="Go" />
                     </form>
                 </div>
                 <div className="row">
-                    <div className="input-field col s6">
+                    <div className="input-field col l6 s12">
                         <ul className="collection with-header">
                             <li className="collection-header"><h4>Unestimated Issues</h4></li>
                             {
@@ -101,7 +101,7 @@ class SessionPage extends Component {
                             }
                         </ul>
                     </div>
-                    <div className="input-field col s6">
+                    <div className="input-field col l6 s12">
                         <ul className="collection with-header">
                             <li className="collection-header"><h4>Estimated Issues</h4></li>
                             {
