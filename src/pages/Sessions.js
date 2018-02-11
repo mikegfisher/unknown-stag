@@ -1,37 +1,32 @@
 import React, { Component } from 'react';
-import fire from '../fire'; // 🔥
+import fire from '../fire'; 
 
 class SessionsPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            sessions: {} // yeah so all we care about here are sessions - pretty simple
+            sessions: {} 
         };
-        this.removeSession = this.removeSession.bind(this); // "this" is a thing
+        this.removeSession = this.removeSession.bind(this); 
     }
     componentWillMount() {
-        // Check to see if the user is logged in
         fire.auth().onAuthStateChanged((user) => {
             if (!user) {
-                // bro come on, LOG THE FRIK IN
                 this.setState({ sessions: { id: 1, title: "Please log in." } });
                 return;
             }
-            // this dude / dudette / gender neutral surfer is logged in
-            let userId = fire.auth().currentUser.uid; // so... who are you?
-            let refSessions = fire.database().ref('sessions').orderByChild("creator_uid").equalTo(userId); // oh - ok cool, we only want YOUR sessions
-            // so, funny story 👇 this is actually relative to the DOM aaaannd the DB, but in a really cool Firebase way that would take WAY more than one line to explain (I mean technically not, but you know...)
+            let userId = fire.auth().currentUser.uid; 
+            let refSessions = fire.database().ref('sessions').orderByChild("creator_uid").equalTo(userId); 
             refSessions.on('child_added', snapshot => {
                 let session = {
                     title: snapshot.val().title,
                     id: snapshot.key,
-                    url: "/session?uid=" + snapshot.key // ok if you convert this to redux (or whatever) I'll buy you a 🍺
+                    url: "/session?uid=" + snapshot.key 
                 };
                 let sessions = this.state.sessions;
                 sessions[snapshot.key] = session;
                 this.setState({ sessions });
             });
-            // ok, every time we remove something (whether from in the app or some other way) update the DOM
             refSessions.on('child_removed', snapshot => {
                 let sessions = this.state.sessions;
                 delete sessions[snapshot.key];
@@ -40,28 +35,27 @@ class SessionsPage extends Component {
         });
     }
     addSession(e) {
-        e.preventDefault(); // 🙏🏻 don't do this when the component loads
-        let newSession = fire.database().ref('sessions').push(); // get the key for a new empty db object
+        e.preventDefault(); 
+        let newSession = fire.database().ref('sessions').push(); 
         return newSession.set({
-            uid: newSession.key, // sometimes the key is easier to grab from here
-            title: this.inputE1.value, // literally, why are you even doing this?
-            creator_photoURL: fire.auth().currentUser.photoURL, // so we can quickly plaster mugs all over d'place
-            creator_displayName: fire.auth().currentUser.displayName, // "Well he's gotta have a name dun'he?" - @hagrid 
-            creator_uid: fire.auth().currentUser.uid // yeah I see you!
+            uid: newSession.key, 
+            title: this.inputE1.value, 
+            creator_photoURL: fire.auth().currentUser.photoURL, 
+            creator_displayName: fire.auth().currentUser.displayName, 
+            creator_uid: fire.auth().currentUser.uid 
         }).then(() => {
-            this.inputE1.value = ''; // whoop! we're done, ready for the next one!
+            this.inputE1.value = ''; 
         }, (error) => {
-            console.log(error); // because errors
+            console.log(error); 
         });
     }
     removeSession(e, id) {
-        let ref = fire.database().ref('sessions'); // get ready to delete the thing
+        let ref = fire.database().ref('sessions'); 
         let rmIssue = window.confirm("You are about to delete this session!");
         if (rmIssue) {
             ref.child(id).remove().then(() => {
-                // successfully removed session 👍
             }, (error) => {
-                console.log(error); // because errors
+                console.log(error);
             });
         }
     }

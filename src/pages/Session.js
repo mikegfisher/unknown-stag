@@ -1,17 +1,18 @@
 import React, { Component } from 'react'
-import fire from '../fire'; // 🔥
-import Issue from '../components/Issue/Issue'
+import fire from '../fire'; 
+import UnestimatedIssue from '../components/UnestimatedIssue/UnestimatedIssue'
+import EstimatedIssue from '../components/EstimatedIssue/EstimatedIssue'
 
 class SessionPage extends Component {
     constructor(props) {
         super(props);
-        this.state = { // alright unestimated stuff on the left, estimated stuff on the right (bottom when mobile)
-            unestimated: {}, 
-            estimated: {}
+        this.state = { 
+            unestimated: {},
+            estimated: {}, 
+            owner: false
         };
     }
     componentWillMount() {
-        // 👇 this is janky and is going to go away
         function getQueryStringParameter(paramToRetrieve) {
             var params = document.URL.split("?")[1].split("&");
             for (var ii in params) {
@@ -21,30 +22,42 @@ class SessionPage extends Component {
             }
         };
         let sessionUid = getQueryStringParameter("uid");
-        // ☝️ that was janky and is going to go away
 
         let refUnestimated = fire.database().ref('issues').orderByChild("session_uid").equalTo(sessionUid);
         refUnestimated.on('child_added', snapshot => {
             let issue = {
                 title: snapshot.val().title,
-                id: snapshot.key, 
+                id: snapshot.key,
                 estimated: snapshot.val().estimated
             };
-            let unestimated = this.state.unestimated;
-            if(issue.estimated === false) {
-                unestimated[snapshot.key] = issue;
-                this.setState({ unestimated });
+            if (issue.estimated === false) {
+                this.setState((prevState) => {
+                    let unEst = prevState.unestimated;
+                    unEst[snapshot.key] = issue;
+                    return {
+                        unestimated: unEst
+                    }
+                });
                 return;
             }
             let estimated = this.state.estimated;
             estimated[snapshot.key] = issue;
             this.setState({ estimated });
         });
+        
+        fire.auth().onAuthStateChanged((user) => {
+        return fire.database().ref('sessions').child(sessionUid).once('value').then((snapshot) => {
+            if (snapshot.val().creator_uid === fire.auth().currentUser.uid) {
+                this.setState({owner: true})
+                console.log(this.state);
+            }
+        }, (error) => {
+            console.log(error);
+        });
+    });
     }
     addIssue(e) {
-        e.preventDefault(); // 🙏🏻 don't do this when the component loads
-
-        // 👇 this is janky and is going to go away
+        e.preventDefault();
         function getQueryStringParameter(paramToRetrieve) {
             var params = document.URL.split("?")[1].split("&");
             for (var ii in params) {
@@ -54,21 +67,19 @@ class SessionPage extends Component {
             }
         };
         let sessionUid = getQueryStringParameter("uid");
-        // ☝️ that was janky and is going to go away
-
-        let newIssues = fire.database().ref('issues').push(); // get the key for a new issue
+        let newIssues = fire.database().ref('issues').push(); 
         return newIssues.set({
-            uid: newIssues.key, // sometimes the key is easier to grab from here
-            title: this.inputE2.value, // literally, why are you even doing this?
-            creator_photoURL: fire.auth().currentUser.photoURL, // so we can quickly plaster mugs all over d'place
-            creator_displayName: fire.auth().currentUser.displayName, // "Well he's gotta have a name dun'he?" - @hagrid 
-            creator_uid: fire.auth().currentUser.uid, // yeah I see you!
-            estimated: false, 
+            uid: newIssues.key, 
+            title: this.inputE2.value, 
+            creator_photoURL: fire.auth().currentUser.photoURL, 
+            creator_displayName: fire.auth().currentUser.displayName, 
+            creator_uid: fire.auth().currentUser.uid, 
+            estimated: false,
             session_uid: sessionUid
         }).then(() => {
-            this.inputE2.value = ''; // whoop! we're done, ready for the next one!
+            this.inputE2.value = ''; 
         }, (error) => {
-            console.log(error); // because errors
+            console.log(error); 
         });
     }
     render() {
@@ -86,7 +97,7 @@ class SessionPage extends Component {
                             <li className="collection-header"><h4>Unestimated Issues</h4></li>
                             {
                                 Object.values(this.state.unestimated).map(issue =>
-                                    <Issue id={issue.id} title={issue.title} estimated={issue.estimated} />
+                                    <UnestimatedIssue owner={this.state.owner} id={issue.id} title={issue.title} estimated={issue.estimated} />
                                 )
                             }
                         </ul>
@@ -96,7 +107,7 @@ class SessionPage extends Component {
                             <li className="collection-header"><h4>Estimated Issues</h4></li>
                             {
                                 Object.values(this.state.estimated).map(issue =>
-                                    <Issue id={issue.id} title={issue.title} estimated={issue.estimated} />
+                                    <EstimatedIssue id={issue.id} title={issue.title} estimated={issue.estimated} />
                                 )
                             }
                         </ul>
