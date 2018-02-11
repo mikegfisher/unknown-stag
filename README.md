@@ -1,6 +1,10 @@
 # Unknown-Stag
 Unknown Stag is a points poker app built with React, Firebase, and Materialize CSS. 
 
+## Live URLs
+https://stag.mikegfisher.com
+https://unknown-stag.firebaseapp.com
+
 ## Setup
 1. `git clone`
 2. `npm install`
