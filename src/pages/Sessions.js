@@ -12,7 +12,6 @@ class SessionsPage extends Component {
     componentWillMount() {
         fire.auth().onAuthStateChanged((user) => {
             if (!user) {
-                this.setState({ sessions: { id: 1, title: "Please log in." } });
                 return;
             }
             let userId = fire.auth().currentUser.uid; 
@@ -65,16 +64,16 @@ class SessionsPage extends Component {
                 <div className="row">
                     <form className="col s12" onSubmit={this.addSession.bind(this)}>
                         <div className="row">
-                            <div className="input-field col s6">
+                            <div className="input-field col l6 s12">
                                 <input placeholder="Create a new session" id="new_session" type="text" className="validate" ref={e1 => this.inputE1 = e1} />
-                                <input className="btn waves-effect waves-light" type="submit" value="Let's roll!" />
+                                <input className="btn waves-effect waves-light" type="submit" value="Go" />
                             </div>
-                            <div className="input-field col s6">
+                            <div className="input-field col l6 s12">
                                 <ul className="collection with-header">
                                     <li className="collection-header"><h4>Recent Sessions</h4></li>
                                     {
                                         Object.values(this.state.sessions).map(session =>
-                                            <li className="collection-item" key={session.id}>
+                                            <li className="collection-item">
                                                 <div>{session.title}
                                                     <a href={session.url} title="go to session" className="secondary-content"><i className="material-icons">arrow_forward</i></a>
                                                     <a href="" onClick={(e) => this.removeSession(e, session.id)} title="delete session" id={session.id} className="secondary-content"><i className="material-icons">delete_forever</i></a>
