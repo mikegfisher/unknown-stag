@@ -20,6 +20,7 @@ class Issue extends Component {
                 photo: snapshot.val().creator_photoURL,
                 name: snapshot.val().creator_displayName
             };
+            this.inputS1.value = estimate.points;
             let estimates = this.state.estimates;
             estimates[snapshot.key] = estimate;
             this.setState({ estimates });
