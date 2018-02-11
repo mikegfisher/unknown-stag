@@ -6,10 +6,9 @@ import {
 
 /* import components */
 import Navigation from './Navigation/Navigation';
+import LogIn from './LogIn/LogIn';
 
 /* import pages */
-import LandingPage from '../pages/Landing';
-import LoginPage from '../pages/Login';
 import SessionsPage from '../pages/Sessions';
 import SessionPage from '../pages/Session';
 
@@ -28,14 +27,7 @@ class App extends Component {
         <Router>
           <div>
             <Navigation />
-            <Route
-              exact path={routes.LANDING}
-              component={() => <LandingPage />}
-            />
-            <Route
-              exact path={routes.LOGIN}
-              component={() => <LoginPage />}
-            />
+            <LogIn />
             <Route
               exact path={routes.SESSIONS}
               component={() => <SessionsPage />}

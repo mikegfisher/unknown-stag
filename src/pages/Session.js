@@ -49,7 +49,6 @@ class SessionPage extends Component {
         return fire.database().ref('sessions').child(sessionUid).once('value').then((snapshot) => {
             if (snapshot.val().creator_uid === fire.auth().currentUser.uid) {
                 this.setState({owner: true})
-                console.log(this.state);
             }
         }, (error) => {
             console.log(error);

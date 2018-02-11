@@ -1,4 +1,2 @@
-export const LOGIN = '/login';
-export const LANDING = '/';
-export const SESSIONS = '/sessions';
+export const SESSIONS = '/';
 export const SESSION = '/session';
