@@ -20,6 +20,7 @@ class LogIn extends Component {
     }
     logInWithGoogle(e) {
         console.log('logging in');
+        this.setState({ loggedIn: true });
         e.preventDefault();
         const provider = new firebase.auth.GoogleAuthProvider();
         fire.auth().signInWithPopup(provider).then(function (result) {
@@ -46,12 +47,12 @@ class LogIn extends Component {
                     // Log that the user was recognized and logged in without overwriting their existing account data. 
                     console.log('Recognized user.');
                 }
-                this.setState({ loggedIn: true });
             });
         }).catch(function (error) {
             // An error with sign-in happened
             console.log('Error with sign-in.');
             console.log(error);
+            this.setState({ loggedIn: false });
         });
     }
     render() {
