@@ -22,7 +22,6 @@ class EstimatedIssue extends Component {
             let estimates = this.state.estimates;
             estimates[snapshot.key] = estimate;
             this.setState({ estimates });
-            console.log(snapshot.val().points);
         });
     }
     updateIssue(e) {
@@ -45,7 +44,7 @@ class EstimatedIssue extends Component {
     }
     render() {
         return (
-            <li className="collection-item" key={this.props.id}>
+            <li className="collection-item">
                 <div>{this.props.title}
                     <a href="" onClick={(e) => this.updateIssue(e)} title="toggle done" className="secondary-content"><i className="material-icons">compare_arrows</i></a>
                     <a href="" onClick={(e) => this.removeIssue(e)} title="delete issue" className="secondary-content"><i className="material-icons">delete_forever</i></a>

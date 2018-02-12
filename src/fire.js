@@ -1,6 +1,7 @@
 import firebase from 'firebase'
 
 // PROD: unknown-stag
+// eslint-disable-next-line
 const prod = {
   apiKey: "AIzaSyCIs2dqas2W0cP01QGOBzktScO0jeArv8k",
   authDomain: "unknown-stag.firebaseapp.com",
@@ -10,6 +11,7 @@ const prod = {
   messagingSenderId: "252990311284"
 };
 // DEV: dev-unknown-stag
+// eslint-disable-next-line
 const dev = {
   apiKey: "AIzaSyBGTTfOV0QXSKMb6WI1JbiHWeFbHWogCyw",
     authDomain: "dev-unknown-stag.firebaseapp.com",

@@ -96,7 +96,7 @@ class SessionPage extends Component {
                             <li className="collection-header"><h4>Unestimated Issues</h4></li>
                             {
                                 Object.values(this.state.unestimated).map(issue =>
-                                    <UnestimatedIssue owner={this.state.owner} id={issue.id} title={issue.title} estimated={issue.estimated} />
+                                    <UnestimatedIssue owner={this.state.owner} key={issue.id} title={issue.title} estimated={issue.estimated} />
                                 )
                             }
                         </ul>
@@ -106,7 +106,7 @@ class SessionPage extends Component {
                             <li className="collection-header"><h4>Estimated Issues</h4></li>
                             {
                                 Object.values(this.state.estimated).map(issue =>
-                                    <EstimatedIssue id={issue.id} title={issue.title} estimated={issue.estimated} />
+                                    <EstimatedIssue key={issue.id} title={issue.title} estimated={issue.estimated} />
                                 )
                             }
                         </ul>
