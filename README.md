@@ -11,7 +11,8 @@ Unknown Stag is a points poker app built with React, Firebase, and Materialize C
 3. Sign up for [Firebase](https://firebase.google.com) if you have not already. 
 4. Update `.firebaserc` file with your **dev** project name. 
 5. Update the `fire.js` file with your project config object. 
-6. `npm start`
+6. **NOTE** Steps 4 & 5 are _mandatory_ - localhost is not an authorized domain for the production Firebase. 
+7. `npm start`
 
 ## Contributing
 - Try to keep the PRs small 🙏🏻 **please**. 
