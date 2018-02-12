@@ -1,5 +1,6 @@
 import firebase from 'firebase'
 
+// PROD: unknown-stag
 const prod = {
   apiKey: "AIzaSyCIs2dqas2W0cP01QGOBzktScO0jeArv8k",
   authDomain: "unknown-stag.firebaseapp.com",
@@ -8,20 +9,17 @@ const prod = {
   storageBucket: "unknown-stag.appspot.com",
   messagingSenderId: "252990311284"
 };
-const fire = firebase.initializeApp(prod);
-
-/* USE THIS FOR LOCAL DEV AND COMMENT OUT THE ABOVE
- 
+// DEV: dev-unknown-stag
 const dev = {
-  apiKey: YOUR_API_KEY,
-  authDomain: YOUR_AUTH_DOMAIN,
-  databaseURL: YOUR_DATABASE_URL,
-  projectId: YOUR_PROJECT_ID,
-  storageBucket: '',
-  messagingSenderId: YOUR_MESSAGING_SENDER_ID
+  apiKey: "AIzaSyBGTTfOV0QXSKMb6WI1JbiHWeFbHWogCyw",
+    authDomain: "dev-unknown-stag.firebaseapp.com",
+    databaseURL: "https://dev-unknown-stag.firebaseio.com",
+    projectId: "dev-unknown-stag",
+    storageBucket: "dev-unknown-stag.appspot.com",
+    messagingSenderId: "9688286635"
 }; 
-const fire = firebase.initializeApp(dev);
 
-*/
+const fire = firebase.initializeApp(prod);
+//const fire = firebase.initializeApp(dev);
 
 export default fire;
