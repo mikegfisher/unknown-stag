@@ -37,7 +37,7 @@ class App extends Component {
               exact path={routes.SESSION}
               component={() => <SessionPage />}
             />
-            <Help />
+
           </div>
         </Router>
       </div>

@@ -20,7 +20,9 @@ class Issue extends Component {
                 photo: snapshot.val().creator_photoURL,
                 name: snapshot.val().creator_displayName
             };
-            this.inputS1.value = estimate.points;
+            if(snapshot.val().creator_uid === fire.auth().currentUser.uid) {
+              this.inputS1.value = estimate.points;
+            }
             let estimates = this.state.estimates;
             estimates[snapshot.key] = estimate;
             this.setState({ estimates });
@@ -48,7 +50,6 @@ class Issue extends Component {
         if (this.inputS1) {
             p = this.inputS1.value;
         }
-
         let newEstimate = fire.database().ref('estimates/' + this.props.id + '/' + fire.auth().currentUser.uid);
         return newEstimate.set({
             uid: newEstimate.key, 
