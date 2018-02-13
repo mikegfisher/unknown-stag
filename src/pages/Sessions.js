@@ -1,26 +1,26 @@
 import React, { Component } from 'react';
-import fire from '../fire'; 
+import fire from '../fire';
 
 class SessionsPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            sessions: {} 
+            sessions: {}
         };
-        this.removeSession = this.removeSession.bind(this); 
+        this.removeSession = this.removeSession.bind(this);
     }
     componentWillMount() {
         fire.auth().onAuthStateChanged((user) => {
             if (!user) {
                 return;
             }
-            let userId = fire.auth().currentUser.uid; 
-            let refSessions = fire.database().ref('sessions').orderByChild("creator_uid").equalTo(userId); 
+            let userId = fire.auth().currentUser.uid;
+            let refSessions = fire.database().ref('sessions').orderByChild("creator_uid").equalTo(userId);
             refSessions.on('child_added', snapshot => {
                 let session = {
                     title: snapshot.val().title,
                     id: snapshot.key,
-                    url: "/session?uid=" + snapshot.key 
+                    url: "/session?uid=" + snapshot.key
                 };
                 let sessions = this.state.sessions;
                 sessions[snapshot.key] = session;
@@ -34,22 +34,22 @@ class SessionsPage extends Component {
         });
     }
     addSession(e) {
-        e.preventDefault(); 
-        let newSession = fire.database().ref('sessions').push(); 
+        e.preventDefault();
+        let newSession = fire.database().ref('sessions').push();
         return newSession.set({
-            uid: newSession.key, 
-            title: this.inputE1.value, 
-            creator_photoURL: fire.auth().currentUser.photoURL, 
-            creator_displayName: fire.auth().currentUser.displayName, 
-            creator_uid: fire.auth().currentUser.uid 
+            uid: newSession.key,
+            title: this.inputE1.value,
+            creator_photoURL: fire.auth().currentUser.photoURL,
+            creator_displayName: fire.auth().currentUser.displayName,
+            creator_uid: fire.auth().currentUser.uid
         }).then(() => {
-            this.inputE1.value = ''; 
+            this.inputE1.value = '';
         }, (error) => {
-            console.log(error); 
+            console.log(error);
         });
     }
     removeSession(e, id) {
-        let ref = fire.database().ref('sessions'); 
+        let ref = fire.database().ref('sessions');
         let rmIssue = window.confirm("You are about to delete this session!");
         if (rmIssue) {
             ref.child(id).remove().then(() => {
@@ -57,6 +57,14 @@ class SessionsPage extends Component {
                 console.log(error);
             });
         }
+    }
+    closeSession(e, id) {
+        fire.database().ref('sessions').child(id).update({
+            closed: true
+        }).then(() => {
+        }, (error) => {
+            console.log(error);
+        });
     }
     render() {
         return (
@@ -76,6 +84,7 @@ class SessionsPage extends Component {
                                             <li className="collection-item" key={session.id}>
                                                 <div>{session.title}
                                                     <a href={session.url} title="go to session" className="secondary-content"><i className="material-icons">arrow_forward</i></a>
+                                                    <a href="" onClick={(e) => this.closeSession(e, session.id)} title="close session" id={session.id} className="secondary-content"><i className="material-icons">done_all</i></a>
                                                     <a href="" onClick={(e) => this.removeSession(e, session.id)} title="delete session" id={session.id} className="secondary-content"><i className="material-icons">delete_forever</i></a>
                                                 </div>
                                             </li>
