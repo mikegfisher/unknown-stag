@@ -29,8 +29,7 @@ class Issue extends Component {
     updateIssue(e) {
         fire.database().ref('issues').child(this.props.id).update({
             estimated: !this.props.estimated
-        }).then(() => {
-        }, (error) => {
+        }).then(() => {}, (error) => {
             console.log(error); 
         });
     }
@@ -38,8 +37,7 @@ class Issue extends Component {
         let ref = fire.database().ref('issues'); 
         let rmIssue = window.confirm("You are about to delete this issue!");
         if (rmIssue) {
-            ref.child(this.props.id).remove().then(() => {
-            }, (error) => {
+            ref.child(this.props.id).remove().then(() => {}, (error) => {
                 console.log(error); 
             });
         }
@@ -58,8 +56,7 @@ class Issue extends Component {
             creator_photoURL: fire.auth().currentUser.photoURL, 
             creator_displayName: fire.auth().currentUser.displayName, 
             creator_uid: fire.auth().currentUser.uid 
-        }).then(() => {
-        }, (error) => {
+        }).then(() => {}, (error) => {
             console.log(error); 
         });
     }

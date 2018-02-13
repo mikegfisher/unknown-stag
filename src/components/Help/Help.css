@@ -1,0 +1,8 @@
+.help {
+    position: fixed;
+    bottom: 0;
+    padding: 15px;
+  }
+  .hidden {
+      display: none;
+  }

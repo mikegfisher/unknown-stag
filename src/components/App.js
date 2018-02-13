@@ -7,6 +7,7 @@ import {
 /* import components */
 import Navigation from './Navigation/Navigation';
 import LogIn from './LogIn/LogIn';
+import Help from './Help/Help';
 
 /* import pages */
 import SessionsPage from '../pages/Sessions';
@@ -36,6 +37,7 @@ class App extends Component {
               exact path={routes.SESSION}
               component={() => <SessionPage />}
             />
+            <Help />
           </div>
         </Router>
       </div>
