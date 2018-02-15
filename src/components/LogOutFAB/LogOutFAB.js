@@ -18,7 +18,7 @@ class LogOutFAB extends Component {
         });
     }
     handleClick() {
-        fire.auth().signOut().then(function() {
+        fire.auth().signOut().then(() => {
             this.setState({ loggedIn: false });
             window.location.reload(true);
         }).catch(function(error) {});
