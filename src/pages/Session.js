@@ -97,7 +97,7 @@ class SessionPage extends Component {
                             <li className="collection-header"><h4>Estimated Issues</h4></li>
                             {
                                 Object.values(this.state.estimated).map(issue =>
-                                    <EstimatedIssue id={issue.id} title={issue.title} estimated={issue.estimated} />
+                                    <EstimatedIssue owner={this.state.owner} id={issue.id} title={issue.title} estimated={issue.estimated} />
                                 )
                             }
                         </ul>

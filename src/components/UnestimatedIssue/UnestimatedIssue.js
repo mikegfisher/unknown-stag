@@ -67,14 +67,14 @@ class Issue extends Component {
                 <div>{this.props.title}
                     <a href="" onClick={(e) => this.submitEstimate(e)} title="confirm estimate" className="secondary-content"><i className="material-icons">done</i></a>
                     <a href="" onClick={(e) => this.updateIssue(e)} hidden={!this.props.owner} title="toggle done" className="secondary-content"><i className="material-icons">compare_arrows</i></a>
-                    <a href="" onClick={(e) => this.removeIssue(e)} title="delete issue" className="secondary-content"><i className="material-icons">delete_forever</i></a>
+                    <a href="" onClick={(e) => this.removeIssue(e)} hidden={!this.props.owner} title="delete issue" className="secondary-content"><i className="material-icons">delete_forever</i></a>
                     <form>
                         <p className="range-field">
                             <input type="range" min="1" max="10" ref={s1 => this.inputS1 = s1} />
                         </p>
                     </form>
                     {Object.values(this.state.estimates).map(estimate =>
-                        <div className="chip" key={estimate.id}>
+                        <div className="chip" key={estimate.id} title={estimate.name} >
                             <img src={estimate.photo} alt="img" />
                             ?
                          </div>

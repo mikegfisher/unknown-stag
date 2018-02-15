@@ -47,10 +47,10 @@ class EstimatedIssue extends Component {
             <li className="collection-item">
                 <div>{this.props.title}
                     <a href="" onClick={(e) => this.updateIssue(e)} title="toggle done" className="secondary-content"><i className="material-icons">compare_arrows</i></a>
-                    <a href="" onClick={(e) => this.removeIssue(e)} title="delete issue" className="secondary-content"><i className="material-icons">delete_forever</i></a>
+                    <a href="" onClick={(e) => this.removeIssue(e)} hidden={!this.props.owner} title="delete issue" className="secondary-content"><i className="material-icons">delete_forever</i></a>
                     <br />
                     {Object.values(this.state.estimates).map(estimate =>
-                        <div className="chip" key={estimate.id}>
+                        <div className="chip" key={estimate.id} title={estimate.name}>
                             <img src={estimate.photo} alt="img" />
                             {estimate.points}
                          </div>
