@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import fire from '../fire';
 import UnestimatedIssue from '../components/UnestimatedIssue/UnestimatedIssue'
 import EstimatedIssue from '../components/EstimatedIssue/EstimatedIssue'
+import './Pages.css';
 
 class SessionPage extends Component {
     constructor(props) {
@@ -37,13 +38,15 @@ class SessionPage extends Component {
             this.setState({ estimated });
         });
         fire.auth().onAuthStateChanged((user) => {
-            return fire.database().ref('sessions').child(sessionUid).once('value').then((snapshot) => {
-                if (snapshot.val().creator_uid === fire.auth().currentUser.uid) {
-                    this.setState({ owner: true })
-                }
-            }, (error) => {
-                console.log(error);
-            });
+            if(user) {
+                return fire.database().ref('sessions').child(sessionUid).once('value').then((snapshot) => {
+                    if (snapshot.val().creator_uid === fire.auth().currentUser.uid) {
+                        this.setState({ owner: true })
+                    }
+                }, (error) => {
+                    console.log(error);
+                });
+            }
         });
     }
     getQueryStringParameter(paramToRetrieve) {
@@ -74,7 +77,7 @@ class SessionPage extends Component {
     }
     render() {
         return (
-            <div>
+            <div className="page">
                 <div className="row">
                     <form className="col l12 s12" onSubmit={this.addIssue.bind(this)}>
                         <input placeholder="Create a new issue" id="new_issue" type="text" className="validate" ref={e2 => this.inputE2 = e2} />
