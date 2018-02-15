@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import fire from '../fire';
+import './Pages.css';
 
 class SessionsPage extends Component {
     constructor(props) {
@@ -79,7 +80,7 @@ class SessionsPage extends Component {
     }
     render() {
         return (
-            <div>
+            <div className="page">
                 <div className="row">
                     <form className="col s12" onSubmit={this.addSession.bind(this)}>
                         <div className="row">

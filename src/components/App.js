@@ -8,6 +8,7 @@ import {
 import Navigation from './Navigation/Navigation';
 import LogIn from './LogIn/LogIn';
 import Help from './Help/Help';
+import LogOutFAB from './LogOutFAB/LogOutFAB';
 
 /* import pages */
 import SessionsPage from '../pages/Sessions';
@@ -37,7 +38,7 @@ class App extends Component {
               exact path={routes.SESSION}
               component={() => <SessionPage />}
             />
-
+            <LogOutFAB />
           </div>
         </Router>
       </div>
