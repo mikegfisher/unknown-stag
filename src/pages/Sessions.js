@@ -85,7 +85,7 @@ class SessionsPage extends Component {
                     <form className="col s12" onSubmit={this.addSession.bind(this)}>
                         <div className="row">
                             <div className="input-field col l6 s12">
-                                <input placeholder="Create a new session" id="new_session" type="text" className="validate" ref={e1 => this.inputE1 = e1} />
+                                <input placeholder="Create a new session to get started..." id="new_session" type="text" className="validate" ref={e1 => this.inputE1 = e1} />
                                 <input className="btn waves-effect waves-light" type="submit" value="Go" />
                             </div>
                             <div className="input-field col l6 s12">

@@ -10,6 +10,7 @@ class SessionPage extends Component {
         this.state = {
             unestimated: {},
             estimated: {},
+            sessionTitle: 'Session',
             owner: false
         };
         this.getQueryStringParameter = this.getQueryStringParameter.bind(this);
@@ -21,7 +22,8 @@ class SessionPage extends Component {
             let issue = {
                 title: snapshot.val().title,
                 id: snapshot.key,
-                estimated: snapshot.val().estimated
+                estimated: snapshot.val().estimated,
+                average: snapshot.val().average || 0
             };
             if (issue.estimated === false) {
                 this.setState((prevState) => {
@@ -40,6 +42,7 @@ class SessionPage extends Component {
         fire.auth().onAuthStateChanged((user) => {
             if(user) {
                 return fire.database().ref('sessions').child(sessionUid).once('value').then((snapshot) => {
+                    this.setState({ sessionTitle: snapshot.val().title });
                     if (snapshot.val().creator_uid === fire.auth().currentUser.uid) {
                         this.setState({ owner: true })
                     }
@@ -79,8 +82,13 @@ class SessionPage extends Component {
         return (
             <div className="page">
                 <div className="row">
+                    <div className="col l12 s12">
+                        <h3>{this.state.sessionTitle}</h3>
+                    </div>
+                </div>
+                <div className="row">
                     <form className="col l12 s12" onSubmit={this.addIssue.bind(this)}>
-                        <input placeholder="Create a new issue" id="new_issue" type="text" className="validate" ref={e2 => this.inputE2 = e2} />
+                        <input placeholder="Create a new issue in this session..." id="new_issue" type="text" className="validate" ref={e2 => this.inputE2 = e2} />
                         <input className="btn waves-effect waves-light" type="submit" value="Go" />
                     </form>
                 </div>
@@ -100,7 +108,7 @@ class SessionPage extends Component {
                             <li className="collection-header"><h4>Estimated Issues</h4></li>
                             {
                                 Object.values(this.state.estimated).map(issue =>
-                                    <EstimatedIssue owner={this.state.owner} id={issue.id} title={issue.title} estimated={issue.estimated} />
+                                    <EstimatedIssue owner={this.state.owner} avg={issue.average} id={issue.id} title={issue.title} estimated={issue.estimated} />
                                 )
                             }
                         </ul>

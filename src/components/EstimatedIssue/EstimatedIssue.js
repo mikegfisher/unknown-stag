@@ -55,6 +55,9 @@ class EstimatedIssue extends Component {
                             {estimate.points}
                          </div>
                     )}
+                    <div className="chip">
+                            <strong>Average:&nbsp;</strong>{this.props.avg}
+                         </div>
                     </div>
             </li>
         );
