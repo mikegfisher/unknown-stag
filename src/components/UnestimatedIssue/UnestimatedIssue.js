@@ -57,8 +57,21 @@ class Issue extends Component {
             creator_photoURL: fire.auth().currentUser.photoURL, 
             creator_displayName: fire.auth().currentUser.displayName, 
             creator_uid: fire.auth().currentUser.uid 
-        }).then(() => {}, (error) => {
-            console.log(error); 
+        }).then(() => {
+            return fire.database().ref('estimates').child(this.props.id).once('value').then((snapshot) => {
+                let estimates = Object.values(snapshot.val());
+                let sum = 0;
+                estimates.forEach(element => {
+                    sum += parseInt(element.points,10);
+                });
+                let average = Math.ceil(sum / estimates.length);
+                let issueRef = fire.database().ref('issues/' + this.props.id);
+                return issueRef.update({
+                    average: average
+                });
+            });
+        }).catch((e) => {
+            console.log(e);
         });
     }
     render() {

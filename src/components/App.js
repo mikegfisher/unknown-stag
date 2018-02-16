@@ -7,7 +7,6 @@ import {
 /* import components */
 import Navigation from './Navigation/Navigation';
 import LogIn from './LogIn/LogIn';
-import Help from './Help/Help';
 import LogOutFAB from './LogOutFAB/LogOutFAB';
 
 /* import pages */
