@@ -17,8 +17,12 @@ Unknown Stag is a points poker app built with React, Firebase, and Materialize C
 - Try to keep the PRs small 🙏🏻 **please**. 
 - Be sure to switch everything back from step 4 in setup. 
 
+### Where to start
+- [Good First Issues](https://github.com/mikegfisher/unknown-stag/labels/good%20first%20issue) 
+- [Help Wanted](https://github.com/mikegfisher/unknown-stag/labels/help%20wanted)
+- [Labels with most issues](https://github.com/mikegfisher/unknown-stag/labels?sort=count-desc)
+
 ## Learning
 - [Firebase](https://firebase.google.com/docs/web/setup)
 - [React](https://reactjs.org/docs/hello-world.html)
-- [React & Firebase](https://www.robinwieruch.de/complete-firebase-authentication-react-tutorial/#react-firebase-setup)
 - [Materialize](http://materializecss.com/getting-started.html)
