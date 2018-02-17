@@ -38,7 +38,7 @@ class LogIn extends Component {
                     });
                 } else {}
             });
-        }).catch(function (error) {
+        }).catch((error) => {
             console.log(error);
             this.setState({ loggedIn: false });
         });
