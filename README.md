@@ -1,5 +1,11 @@
 # Unknown-Stag
-Unknown Stag is a points poker app built with React, Firebase, and Materialize CSS. 
+Hey there! Unknown Stag is a points poker app app. 
+
+### What is points poker you ask? 
+Points poker is a way to sort of gamify estimating the level of effort on a task (or user story). Users start by creating a points poker session where a team will get together to estimate a defined scope of work. Then, each team member will submit their estimates secretly until all estimates are submitted. **Not everyone is required to submit an estimate.** The session creator determines when an issue can be marked estimated. At that time, everyone's estimate will become visible, along with the average estimate (rounded up) across the team for that issue. 
+
+### Cool, umm can you explain points a little bit to me?
+Points are like miles on your project/product roadmap. Now, those of us who drive know that sometimes it takes less than a minute to travel a mile, but sometimes it takes 30 minutes. On average though, your velocity on roadtrips is probably about 55mph. This same concept can be applied to planning and estimating work on your projects. You just have to measure level of effort - points - consistently. 
 
 ## Live URLs
 - https://stag.mikegfisher.com
@@ -12,17 +18,3 @@ Unknown Stag is a points poker app built with React, Firebase, and Materialize C
 4. Update the `fire.js` file with your dev project config object. 
 5. **NOTE** Step 4 is _mandatory_ - localhost is not an authorized domain for the production Firebase. 
 6. `npm start`
-
-## Contributing
-- Try to keep the PRs small 🙏🏻 **please**. 
-- Be sure to switch everything back from step 4 in setup. 
-
-### Where to start
-- [Good First Issues](https://github.com/mikegfisher/unknown-stag/labels/good%20first%20issue) 
-- [Help Wanted](https://github.com/mikegfisher/unknown-stag/labels/help%20wanted)
-- [Labels with most issues](https://github.com/mikegfisher/unknown-stag/labels?sort=count-desc)
-
-## Learning
-- [Firebase](https://firebase.google.com/docs/web/setup)
-- [React](https://reactjs.org/docs/hello-world.html)
-- [Materialize](http://materializecss.com/getting-started.html)
