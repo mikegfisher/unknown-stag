@@ -12,8 +12,9 @@ This project is all about helping all of us do what we do better. So, here are s
 - [Reporting bugs](#reporting-bugs)
 - [Suggesting enhancements](#suggesting-enhancements)
 
-## Reporting bugs
-Before reporting a bug, check out [known issues](https://github.com/mikegfisher/unknown-stag/issues?q=is%3Aopen+is%3Aissue+label%3Abug) and you might just find it's already in there. 
+## Reporting bugs 
+### [Browse Known Issues](https://github.com/mikegfisher/unknown-stag/issues?q=is%3Aopen+is%3Aissue+label%3Abug) | [Report a Bug](https://github.com/mikegfisher/unknown-stag/issues/new?template=bug.md&labels=bug)
+Before reporting a bug, check out [known issues](https://github.com/mikegfisher/unknown-stag/issues?q=is%3Aopen+is%3Aissue+label%3Abug) and you might just find it's already in there. When you do report a bug, please use the [template](https://github.com/mikegfisher/unknown-stag/issues/new?template=bug.md&labels=bug).
 
 ## Suggesting enhancements
 Check out the [issues list](https://github.com/mikegfisher/unknown-stag/issues) to see if someone else also thought you had a great idea. If you don't see anything similar - just try to be as descriptive as possible. Looking forward to reading your ideas 👍
