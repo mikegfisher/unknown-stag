@@ -1,5 +1,5 @@
 # Unknown-Stag
-Hey there! Unknown Stag is a points poker app app. 
+Hey there! Unknown Stag is a points poker app. 
 
 ### What is points poker you ask? 
 Points poker is a way to sort of gamify estimating the level of effort on a task (or user story). Users start by creating a points poker session where a team will get together to estimate a defined scope of work. Then, each team member will submit their estimates secretly until all estimates are submitted. **Not everyone is required to submit an estimate.** The session creator determines when an issue can be marked estimated. At that time, everyone's estimate will become visible, along with the average estimate (rounded up) across the team for that issue. 
