@@ -15,7 +15,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "CI=true react-scripts test --env=jsdom --bail",
+    "test": "CI=true react-scripts test --env=jsdom --bail --coverage",
     "eject": "react-scripts eject",
     "deploy": "firebase deploy"
   }
