@@ -1,9 +1,12 @@
 {
-  "name": "react-and-firebase",
+  "name": "unknown-stag",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "firebase": "^4.9.1",
+    "jest": "^22.3.0",
+    "jest-cli": "^22.3.0",
+    "object.values": "^1.0.4",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-router-dom": "^4.2.2",
@@ -12,7 +15,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
+    "test": "CI=true react-scripts test --env=jsdom --bail",
     "eject": "react-scripts eject",
     "deploy": "firebase deploy"
   }
