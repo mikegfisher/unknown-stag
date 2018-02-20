@@ -80,7 +80,6 @@ class SessionsPage extends Component {
     }
     render() {
         return (
-          <div>
             <div className="page">
                 <div className="row">
                     <form className="col s12" onSubmit={this.addSession.bind(this)}>
@@ -109,7 +108,6 @@ class SessionsPage extends Component {
                         </div>
                     </form>
                 </div>
-            </div>
             </div>
         );
     }
