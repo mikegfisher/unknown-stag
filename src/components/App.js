@@ -26,6 +26,7 @@ class App extends Component {
     return (
       <div>
         <Router>
+        
           <div>
             <Navigation />
             <LogIn />
