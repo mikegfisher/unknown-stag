@@ -27,7 +27,6 @@ class App extends Component {
       <div>
         <Router>
           <div>
-          
             <Navigation />
             <LogIn />
             <Route
