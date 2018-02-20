@@ -19,9 +19,9 @@ const dev = {
     projectId: "dev-unknown-stag",
     storageBucket: "dev-unknown-stag.appspot.com",
     messagingSenderId: "9688286635"
-}; 
+};
 
-const fire = firebase.initializeApp(prod);
-//const fire = firebase.initializeApp(dev);
+//const fire = firebase.initializeApp(prod);
+const fire = firebase.initializeApp(dev);
 
 export default fire;
