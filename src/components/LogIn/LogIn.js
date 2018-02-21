@@ -45,23 +45,25 @@ class LogIn extends Component {
     }
     render() {
         return (
-            <div hidden={this.state.loggedIn} >
-                <div className="row">
-                    <div className="col s12 m6">
-                        <div className="card grey darken-4">
-                            <div className="card-content white-text">
-                                <span className="card-title">Welcome</span>
-                                <p>Please log in or sign up with Google to start using Unknown Stag for your points poker session. </p>
-
+          <div>
+            {
+              !this.state.loggedIn && (
+                    <div className="row">
+                        <div className="col s12 m6">
+                            <div className="card grey darken-4">
+                                <div className="card-content white-text">
+                                    <span className="card-title">Welcome</span>
+                                      <p>Please log in or sign up with Google to start using Unknown Stag for your points poker session. </p>
+                                </div>
                             </div>
-
+                            <form className="col s12" onSubmit={this.logInWithGoogle.bind(this)}>
+                              <input className="btn waves-effect waves-light red" type="submit" value="Log In / Sign Up" />
+                            </form>
                         </div>
-                        <form className="col s12" onSubmit={this.logInWithGoogle.bind(this)}>
-                            <input className="btn waves-effect waves-light red" type="submit" value="Log In / Sign Up" />
-                        </form>
                     </div>
-                </div>
-            </div>
+            )
+          }
+          </div>
         );
     }
 }

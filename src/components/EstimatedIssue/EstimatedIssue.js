@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import fire from '../../fire'; 
+import fire from '../../fire';
 
 class EstimatedIssue extends Component {
     constructor(props) {
@@ -15,7 +15,7 @@ class EstimatedIssue extends Component {
         refEstimates.on('child_added', snapshot => {
             let estimate = {
                 points: snapshot.val().points,
-                id: snapshot.key, 
+                id: snapshot.key,
                 photo: snapshot.val().creator_photoURL,
                 name: snapshot.val().creator_displayName
             };
@@ -29,16 +29,16 @@ class EstimatedIssue extends Component {
             estimated: !this.props.estimated
         }).then(() => {
         }, (error) => {
-            console.log(error); 
+            console.log(error);
         });
     }
     removeIssue(e) {
-        let ref = fire.database().ref('issues'); 
+        let ref = fire.database().ref('issues');
         let rmIssue = window.confirm("You are about to delete this issue!");
         if (rmIssue) {
             ref.child(this.props.id).remove().then(() => {
             }, (error) => {
-                console.log(error); 
+                console.log(error);
             });
         }
     }
@@ -47,7 +47,7 @@ class EstimatedIssue extends Component {
             <li className="collection-item">
                 <div>{this.props.title}
                     <a href="" onClick={(e) => this.updateIssue(e)} title="toggle done" className="secondary-content"><i className="material-icons">compare_arrows</i></a>
-                    <a href="" onClick={(e) => this.removeIssue(e)} hidden={!this.props.owner} title="delete issue" className="secondary-content"><i className="material-icons">delete_forever</i></a>
+                    {this.props.owner && (<a href="" onClick={(e) => this.removeIssue(e)} title="delete issue" className="secondary-content"><i className="material-icons">delete_forever</i></a>)}
                     <br />
                     {Object.values(this.state.estimates).map(estimate =>
                         <div className="chip" key={estimate.id} title={estimate.name}>

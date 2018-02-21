@@ -26,7 +26,7 @@ class LogOutFAB extends Component {
     render() {
         return (
             <div className="log-out-fab">
-                <a hidden={this.state.loggedIn} onClick={(e) => this.handleClick(e)} title="log out" className="btn-floating btn-large waves-effect waves-light red"><i className="material-icons">exit_to_app</i></a>
+                {this.state.loggedIn && (<a onClick={(e) => this.handleClick(e)} title="log out" className="btn-floating btn-large waves-effect waves-light red"><i className="material-icons">exit_to_app</i></a>)}
             </div>
         )
     }
