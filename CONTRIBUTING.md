@@ -4,15 +4,19 @@ This project is all about helping all of us do what we do better. So, here are s
 
 ## Contents
 [Conduct](https://github.com/mikegfisher/unknown-stag/blob/master/CODE_OF_CONDUCT.md) - Don't be rude 👌
-#### The Tech
+
+#### Learning
 - [Firebase](https://firebase.google.com/)
 - [React](https://reactjs.org/)
 - [Materialize CSS](http://materializecss.com/)
+- [Jest](https://facebook.github.io/jest/docs/en/getting-started.html)
+
 #### Contributing
 - [Reporting bugs](#reporting-bugs)
 - [Suggesting enhancements](#suggesting-enhancements)
 
 ## Reporting bugs 
+
 ### [Browse Known Issues](https://github.com/mikegfisher/unknown-stag/issues?q=is%3Aopen+is%3Aissue+label%3Abug) | [Report a Bug](https://github.com/mikegfisher/unknown-stag/issues/new?template=bug.md&labels=bug)
 Before reporting a bug, check out [known issues](https://github.com/mikegfisher/unknown-stag/issues?q=is%3Aopen+is%3Aissue+label%3Abug) and you might just find it's already in there. When you do report a bug, please use the [template](https://github.com/mikegfisher/unknown-stag/issues/new?template=bug.md&labels=bug).
 
