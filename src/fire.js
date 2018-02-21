@@ -21,7 +21,7 @@ const dev = {
     messagingSenderId: "9688286635"
 };
 
-const fire = firebase.initializeApp(prod);
-//const fire = firebase.initializeApp(dev);
+//const fire = firebase.initializeApp(prod);
+const fire = firebase.initializeApp(dev);
 
 export default fire;
