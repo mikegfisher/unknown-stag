@@ -96,8 +96,8 @@ class SessionsPage extends Component {
                                             <li className="collection-item" key={session.id}>
                                                 <div>{session.title}
                                                     <a href={session.url} title="go to session" className="secondary-content"><i className="material-icons">arrow_forward</i></a>
-                                                    <a hidden={session.closed} href="" onClick={(e) => this.closeSession(e, session.id)} title="close session" id={session.id} className="secondary-content"><i className="material-icons">done_all</i></a>
-                                                    <a hidden={!session.closed} href="" onClick={(e) => this.openSession(e, session.id)} title="re-open session" id={session.id} className="secondary-content"><i className="material-icons">cached</i></a>
+                                                    {!session.closed && (<a href="" onClick={(e) => this.closeSession(e, session.id)} title="close session" id={session.id} className="secondary-content"><i className="material-icons">done_all</i></a>)}
+                                                    {session.closed && (<a href="" onClick={(e) => this.openSession(e, session.id)} title="re-open session" id={session.id} className="secondary-content"><i className="material-icons">cached</i></a>)}
                                                     <a href="" onClick={(e) => this.removeSession(e, session.id)} title="delete session" id={session.id} className="secondary-content"><i className="material-icons">delete_forever</i></a>
                                                 </div>
                                             </li>
