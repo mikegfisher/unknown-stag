@@ -11,6 +11,8 @@ class SessionsPage extends Component {
         this.removeSession = this.removeSession.bind(this);
         this.closeSession = this.closeSession.bind(this);
         this.openSession = this.openSession.bind(this);
+        this.makeSessionPublic = this.makeSessionPublic.bind(this);
+        this.makeSessionPrivate = this.makeSessionPrivate.bind(this);
     }
     componentWillMount() {
         fire.auth().onAuthStateChanged((user) => {
@@ -24,7 +26,8 @@ class SessionsPage extends Component {
                     title: snapshot.val().title,
                     id: snapshot.key,
                     closed: snapshot.val().closed,
-                    url: "/session?uid=" + snapshot.key
+                    url: "/session?uid=" + snapshot.key,
+                    public: snapshot.val().public
                 };
                 let sessions = this.state.sessions;
                 sessions[snapshot.key] = session;
@@ -45,7 +48,9 @@ class SessionsPage extends Component {
             title: this.inputE1.value,
             creator_photoURL: fire.auth().currentUser.photoURL,
             creator_displayName: fire.auth().currentUser.displayName,
-            creator_uid: fire.auth().currentUser.uid
+            creator_uid: fire.auth().currentUser.uid,
+            public: false,
+            created: new Date()
         }).then(() => {
             this.inputE1.value = '';
         }, (error) => {
@@ -78,6 +83,22 @@ class SessionsPage extends Component {
             console.log(error);
         });
     }
+    makeSessionPublic(e, id) {
+      fire.database().ref('sessions').child(id).update({
+          public: true
+      }).then(() => {
+      }, (error) => {
+          console.log(error);
+      });
+    }
+    makeSessionPrivate(e, id) {
+      fire.database().ref('sessions').child(id).update({
+          public: false
+      }).then(() => {
+      }, (error) => {
+          console.log(error);
+      });
+    }
     render() {
         return (
             <div className="page">
@@ -96,6 +117,8 @@ class SessionsPage extends Component {
                                             <li className="collection-item" key={session.id}>
                                                 <div>{session.title}
                                                     <a href={session.url} title="go to session" className="secondary-content"><i className="material-icons">arrow_forward</i></a>
+                                                    {!session.public && (<a href="" onClick={(e) => this.makeSessionPublic(e, session.id)} title="make this session public" className="secondary-content"><i className="material-icons">share</i></a>)}
+                                                    {session.public && (<a href="" onClick={(e) => this.makeSessionPrivate(e, session.id)} title="make this session private" className="secondary-content"><i className="material-icons">lock</i></a>)}
                                                     {!session.closed && (<a href="" onClick={(e) => this.closeSession(e, session.id)} title="close session" id={session.id} className="secondary-content"><i className="material-icons">done_all</i></a>)}
                                                     {session.closed && (<a href="" onClick={(e) => this.openSession(e, session.id)} title="re-open session" id={session.id} className="secondary-content"><i className="material-icons">cached</i></a>)}
                                                     <a href="" onClick={(e) => this.removeSession(e, session.id)} title="delete session" id={session.id} className="secondary-content"><i className="material-icons">delete_forever</i></a>
