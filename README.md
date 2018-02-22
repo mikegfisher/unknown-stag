@@ -1,3 +1,5 @@
+[![buddy pipeline](https://app.buddy.works/mikegfisher/unknown-stag/pipelines/pipeline/125711/badge.svg?token=cfedb8a2703ddaf7ed8698e6bd27444b34eb8cfd76f14bf643cc31af1dbdab1d "buddy pipeline")](https://app.buddy.works/mikegfisher/unknown-stag/pipelines/pipeline/125711)
+
 # Unknown-Stag
 Hey there! Unknown Stag is a points poker app. 
 
