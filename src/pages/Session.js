@@ -95,7 +95,7 @@ class SessionPage extends Component {
                 <div className="row">
                     <div className="input-field col l6 s12">
                         <ul className="collection with-header">
-                            <li className="collection-header"><h4>Unestimated Issues</h4></li>
+                            <li className="collection-header grey lighten-4"><h4>Unestimated</h4></li>
                             {
                                 Object.values(this.state.unestimated).map(issue =>
                                     <UnestimatedIssue owner={this.state.owner} id={issue.id} title={issue.title} estimated={issue.estimated} />
@@ -105,7 +105,7 @@ class SessionPage extends Component {
                     </div>
                     <div className="input-field col l6 s12">
                         <ul className="collection with-header">
-                            <li className="collection-header"><h4>Estimated Issues</h4></li>
+                            <li className="collection-header grey lighten-4"><h4>Estimated</h4></li>
                             {
                                 Object.values(this.state.estimated).map(issue =>
                                     <EstimatedIssue owner={this.state.owner} avg={issue.average} id={issue.id} title={issue.title} estimated={issue.estimated} />

@@ -42,6 +42,10 @@ class PublicSessions extends Component {
                       <div>{session.title}
                           <a href={session.url} title="go to session" className="secondary-content"><i className="material-icons">arrow_forward</i></a>
                       </div>
+                      <div className="chip" title={session.name} >
+                          <img src={session.photo} alt="img" />
+                          {session.name}
+                       </div>
                   </li>
               )
           }
