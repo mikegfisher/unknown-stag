@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Session from '../Session/Session';
 import fire from '../../fire';
 
 class PublicSessions extends Component {
@@ -12,13 +13,14 @@ class PublicSessions extends Component {
           let refSessions = fire.database().ref('sessions').orderByChild('public').equalTo(true);
           refSessions.on('child_added', snapshot => {
               let session = {
-                  title: snapshot.val().title,
-                  id: snapshot.key,
-                  closed: snapshot.val().closed,
-                  url: "/session?uid=" + snapshot.key,
-                  public: snapshot.val().public,
-                  photo: snapshot.val().creator_photoURL,
-                  name: snapshot.val().creator_displayName
+                title: snapshot.val().title,
+                id: snapshot.key,
+                closed: snapshot.val().closed,
+                url: "/session?uid=" + snapshot.key,
+                public: snapshot.val().public,
+                photo: snapshot.val().creator_photoURL,
+                name: snapshot.val().creator_displayName,
+                creatorUid: snapshot.val().creator_uid
               };
               let sessions = this.state.sessions;
               if (!session.closed) {
@@ -38,15 +40,7 @@ class PublicSessions extends Component {
           <li className="collection-header grey lighten-4"><h4>Public</h4></li>
           {
               Object.values(this.state.sessions).map(session =>
-                  <li className="collection-item" key={session.id}>
-                      <div>{session.title}
-                          <a href={session.url} title="go to session" className="secondary-content"><i className="material-icons">arrow_forward</i></a>
-                      </div>
-                      <div className="chip" title={session.name} >
-                          <img src={session.photo} alt="img" />
-                          {session.name}
-                       </div>
-                  </li>
+                  <Session sessionObject={session} />
               )
           }
       </ul>
