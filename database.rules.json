@@ -6,7 +6,7 @@
       }
     },
     "sessions": {
-      ".indexOn": ["creator_uid"]
+      ".indexOn": ["creator_uid","public"]
     },
     "issues": {
       ".indexOn": ["session_uid"]

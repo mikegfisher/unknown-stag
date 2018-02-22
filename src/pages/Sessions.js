@@ -1,44 +1,14 @@
 import React, { Component } from 'react';
+import LatestSessions from '../components/LatestSessions/LatestSessions';
+import OpenSessions from '../components/OpenSessions/OpenSessions';
+import PublicSessions from '../components/PublicSessions/PublicSessions';
 import fire from '../fire';
 import './Pages.css';
 
 class SessionsPage extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            sessions: {}
-        };
-        this.removeSession = this.removeSession.bind(this);
-        this.closeSession = this.closeSession.bind(this);
-        this.openSession = this.openSession.bind(this);
-        this.makeSessionPublic = this.makeSessionPublic.bind(this);
-        this.makeSessionPrivate = this.makeSessionPrivate.bind(this);
-    }
-    componentWillMount() {
-        fire.auth().onAuthStateChanged((user) => {
-            if (!user) {
-                return;
-            }
-            let userId = fire.auth().currentUser.uid;
-            let refSessions = fire.database().ref('sessions').orderByChild("creator_uid").equalTo(userId);
-            refSessions.on('child_added', snapshot => {
-                let session = {
-                    title: snapshot.val().title,
-                    id: snapshot.key,
-                    closed: snapshot.val().closed,
-                    url: "/session?uid=" + snapshot.key,
-                    public: snapshot.val().public
-                };
-                let sessions = this.state.sessions;
-                sessions[snapshot.key] = session;
-                this.setState({ sessions });
-            });
-            refSessions.on('child_removed', snapshot => {
-                let sessions = this.state.sessions;
-                delete sessions[snapshot.key];
-                this.setState({ sessions });
-            });
-        });
+        this.state = {};
     }
     addSession(e) {
         e.preventDefault();
@@ -50,54 +20,13 @@ class SessionsPage extends Component {
             creator_displayName: fire.auth().currentUser.displayName,
             creator_uid: fire.auth().currentUser.uid,
             public: false,
+            closed: false,
             created: new Date()
         }).then(() => {
             this.inputE1.value = '';
         }, (error) => {
             console.log(error);
         });
-    }
-    removeSession(e, id) {
-        let ref = fire.database().ref('sessions');
-        let rmIssue = window.confirm("You are about to delete this session!");
-        if (rmIssue) {
-            ref.child(id).remove().then(() => {
-            }, (error) => {
-                console.log(error);
-            });
-        }
-    }
-    closeSession(e, id) {
-        fire.database().ref('sessions').child(id).update({
-            closed: true
-        }).then(() => {
-        }, (error) => {
-            console.log(error);
-        });
-    }
-    openSession(e, id) {
-        fire.database().ref('sessions').child(id).update({
-            closed: false
-        }).then(() => {
-        }, (error) => {
-            console.log(error);
-        });
-    }
-    makeSessionPublic(e, id) {
-      fire.database().ref('sessions').child(id).update({
-          public: true
-      }).then(() => {
-      }, (error) => {
-          console.log(error);
-      });
-    }
-    makeSessionPrivate(e, id) {
-      fire.database().ref('sessions').child(id).update({
-          public: false
-      }).then(() => {
-      }, (error) => {
-          console.log(error);
-      });
     }
     render() {
         return (
@@ -109,27 +38,19 @@ class SessionsPage extends Component {
                                 <input placeholder="Create a new session to get started..." id="new_session" type="text" className="validate" ref={e1 => this.inputE1 = e1} />
                                 <input className="btn waves-effect waves-light" type="submit" value="Go" />
                             </div>
-                            <div className="input-field col l6 s12">
-                                <ul className="collection with-header">
-                                    <li className="collection-header"><h4>Recent Sessions</h4></li>
-                                    {
-                                        Object.values(this.state.sessions).map(session =>
-                                            <li className="collection-item" key={session.id}>
-                                                <div>{session.title}
-                                                    <a href={session.url} title="go to session" className="secondary-content"><i className="material-icons">arrow_forward</i></a>
-                                                    {!session.public && (<a href="" onClick={(e) => this.makeSessionPublic(e, session.id)} title="make this session public" className="secondary-content"><i className="material-icons">share</i></a>)}
-                                                    {session.public && (<a href="" onClick={(e) => this.makeSessionPrivate(e, session.id)} title="make this session private" className="secondary-content"><i className="material-icons">lock</i></a>)}
-                                                    {!session.closed && (<a href="" onClick={(e) => this.closeSession(e, session.id)} title="close session" id={session.id} className="secondary-content"><i className="material-icons">done_all</i></a>)}
-                                                    {session.closed && (<a href="" onClick={(e) => this.openSession(e, session.id)} title="re-open session" id={session.id} className="secondary-content"><i className="material-icons">cached</i></a>)}
-                                                    <a href="" onClick={(e) => this.removeSession(e, session.id)} title="delete session" id={session.id} className="secondary-content"><i className="material-icons">delete_forever</i></a>
-                                                </div>
-                                            </li>
-                                        )
-                                    }
-                                </ul>
+                            <div className="col l6 s12">
+                                <LatestSessions />
                             </div>
                         </div>
                     </form>
+                </div>
+                <div className="row">
+                  <div className="col l6 s12">
+                    <OpenSessions />
+                  </div>
+                  <div className="col l6 s12">
+                    <PublicSessions />
+                  </div>
                 </div>
             </div>
         );
