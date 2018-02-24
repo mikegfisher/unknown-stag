@@ -8,10 +8,7 @@ class Session extends Component {
       userId: ''
     };
     this.removeSession = this.removeSession.bind(this);
-    this.closeSession = this.closeSession.bind(this);
-    this.openSession = this.openSession.bind(this);
-    this.makeSessionPublic = this.makeSessionPublic.bind(this);
-    this.makeSessionPrivate = this.makeSessionPrivate.bind(this);
+    this.updateSession = this.updateSession.bind(this);
   }
   componentWillMount() {
     fire.auth().onAuthStateChanged((user) => {
@@ -30,53 +27,27 @@ class Session extends Component {
           });
       }
   }
-  closeSession(e, id) {
-      fire.database().ref('sessions').child(id).update({
-          closed: true
-      }).then(() => {
+  updateSession(e, id, updateObject) {
+      fire.database().ref('sessions').child(id).update(updateObject).then(() => {
       }, (error) => {
           console.log(error);
       });
-  }
-  openSession(e, id) {
-      fire.database().ref('sessions').child(id).update({
-          closed: false
-      }).then(() => {
-      }, (error) => {
-          console.log(error);
-      });
-  }
-  makeSessionPublic(e, id) {
-    fire.database().ref('sessions').child(id).update({
-        public: true
-    }).then(() => {
-    }, (error) => {
-        console.log(error);
-    });
-  }
-  makeSessionPrivate(e, id) {
-    fire.database().ref('sessions').child(id).update({
-        public: false
-    }).then(() => {
-    }, (error) => {
-        console.log(error);
-    });
   }
   render() {
-    let owner = (this.props.sessionObject.creatorUid === this.state.userId);
+    let owner = (this.props.sessionObject.creator_uid === this.state.userId);
     return(
-      <li className="collection-item" key={this.props.sessionObject.id}>
+      <li className="collection-item" key={this.props.sessionObject.uid}>
           <div>{this.props.sessionObject.title}
-              <a href={this.props.sessionObject.url} title="go to session" className="secondary-content"><i className="material-icons">arrow_forward</i></a>
-              {owner && !this.props.sessionObject.public && (<a href="" onClick={(e) => this.makeSessionPublic(e, this.props.sessionObject.id)} title="make this session public" className="secondary-content"><i className="material-icons">share</i></a>)}
-              {owner && this.props.sessionObject.public && (<a href="" onClick={(e) => this.makeSessionPrivate(e, this.props.sessionObject.id)} title="make this session private" className="secondary-content"><i className="material-icons">lock</i></a>)}
-              {owner && !this.props.sessionObject.closed && (<a href="" onClick={(e) => this.closeSession(e, this.props.sessionObject.id)} title="close session" className="secondary-content"><i className="material-icons">done_all</i></a>)}
-              {owner && this.props.sessionObject.closed && (<a href="" onClick={(e) => this.openSession(e, this.props.sessionObject.id)} title="re-open session" className="secondary-content"><i className="material-icons">cached</i></a>)}
-              {owner && (<a href="" onClick={(e) => this.removeSession(e, this.props.sessionObject.id)} title="delete session" className="secondary-content"><i className="material-icons">delete_forever</i></a>)}
+              <a href={"/session?uid=" + this.props.sessionObject.uid} title="go to session" className="secondary-content"><i className="material-icons">arrow_forward</i></a>
+              {owner && !this.props.sessionObject.public && (<a href="" onClick={(e) => this.updateSession(e, this.props.sessionObject.uid, { public: true })} title="make this session public" className="secondary-content"><i className="material-icons">share</i></a>)}
+              {owner && this.props.sessionObject.public && (<a href="" onClick={(e) => this.updateSession(e, this.props.sessionObject.uid, { public: false })} title="make this session private" className="secondary-content"><i className="material-icons">lock</i></a>)}
+              {owner && !this.props.sessionObject.closed && (<a href="" onClick={(e) => this.updateSession(e, this.props.sessionObject.uid, { closed: true })} title="close session" className="secondary-content"><i className="material-icons">done_all</i></a>)}
+              {owner && this.props.sessionObject.closed && (<a href="" onClick={(e) => this.updateSession(e, this.props.sessionObject.uid, { closed: false })} title="re-open session" className="secondary-content"><i className="material-icons">cached</i></a>)}
+              {owner && (<a href="" onClick={(e) => this.removeSession(e, this.props.sessionObject.uid)} title="delete session" className="secondary-content"><i className="material-icons">delete_forever</i></a>)}
           </div>
-          <div className="chip" title={this.props.sessionObject.name} >
-              <img src={this.props.sessionObject.photo} alt="img" />
-              {this.props.sessionObject.name}
+          <div className="chip" title={this.props.sessionObject.creator_displayName} >
+              <img src={this.props.sessionObject.creator_photoURL} alt="img" />
+              {this.props.sessionObject.creator_displayName}
            </div>
       </li>
     );

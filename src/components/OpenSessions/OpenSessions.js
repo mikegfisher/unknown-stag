@@ -15,25 +15,15 @@ class OpenSessions extends Component {
               return;
           }
           let userId = fire.auth().currentUser.uid;
-          let refSessions = fire.database().ref('sessions').orderByChild('creator_uid').equalTo(userId);
-          refSessions.on('child_added', snapshot => {
-              let session = {
-                title: snapshot.val().title,
-                id: snapshot.key,
-                closed: snapshot.val().closed,
-                url: "/session?uid=" + snapshot.key,
-                public: snapshot.val().public,
-                photo: snapshot.val().creator_photoURL,
-                name: snapshot.val().creator_displayName,
-                creatorUid: snapshot.val().creator_uid
-              };
+          let dbRef = fire.database().ref('sessions').orderByChild('creator_uid').equalTo(userId);
+          dbRef.on('child_added', snapshot => {
               let sessions = this.state.sessions;
-              if (!session.closed) {
-                sessions[snapshot.key] = session;
+              if (!snapshot.val().closed) { // client side filtering for only open sessions
+                sessions[snapshot.key] = snapshot.val();
+                this.setState({ sessions });
               }
-              this.setState({ sessions });
           });
-          refSessions.on('child_removed', snapshot => {
+          dbRef.on('child_removed', snapshot => {
               let sessions = this.state.sessions;
               delete sessions[snapshot.key];
               this.setState({ sessions });
@@ -45,8 +35,8 @@ class OpenSessions extends Component {
       <ul className="collection with-header">
           <li className="collection-header grey lighten-4"><h4>Open</h4></li>
           {
-              Object.values(this.state.sessions).map(session =>
-                  <Session sessionObject={session} />
+              Object.values(this.state.sessions).map((session, index) =>
+                <Session sessionObject={session} key={"openSession_" + index} />
               )
           }
       </ul>

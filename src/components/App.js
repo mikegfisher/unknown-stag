@@ -10,8 +10,8 @@ import LogIn from './LogIn/LogIn';
 import LogOutFAB from './LogOutFAB/LogOutFAB';
 
 /* import pages */
-import SessionsPage from '../pages/Sessions';
-import SessionPage from '../pages/Session';
+import SessionsPage from '../pages/SessionsPage';
+import SessionPage from '../pages/SessionPage';
 
 /* import routes */
 import * as routes from '../constants/routes';

@@ -92,8 +92,8 @@ class Issue extends Component {
                             <input type="range" min="1" max="10" ref={s1 => this.inputS1 = s1} />
                         </p>
                     </form>
-                    {Object.values(this.state.estimates).map(estimate =>
-                        <div className="chip" key={estimate.id} title={estimate.name} >
+                    {Object.values(this.state.estimates).map((estimate, index) =>
+                        <div className="chip" key={"estimate_" + index} title={estimate.name} >
                             <img src={estimate.photo} alt="img" />
                             ?
                          </div>

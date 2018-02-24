@@ -97,8 +97,8 @@ class SessionPage extends Component {
                         <ul className="collection with-header">
                             <li className="collection-header grey lighten-4"><h4>Unestimated</h4></li>
                             {
-                                Object.values(this.state.unestimated).map(issue =>
-                                    <UnestimatedIssue owner={this.state.owner} id={issue.id} title={issue.title} estimated={issue.estimated} />
+                                Object.values(this.state.unestimated).map((issue, index) =>
+                                    <UnestimatedIssue key={"unestimated_" + index} id={issue.id} owner={this.state.owner} title={issue.title} estimated={issue.estimated} />
                                 )
                             }
                         </ul>
@@ -107,8 +107,8 @@ class SessionPage extends Component {
                         <ul className="collection with-header">
                             <li className="collection-header grey lighten-4"><h4>Estimated</h4></li>
                             {
-                                Object.values(this.state.estimated).map(issue =>
-                                    <EstimatedIssue owner={this.state.owner} avg={issue.average} id={issue.id} title={issue.title} estimated={issue.estimated} />
+                                Object.values(this.state.estimated).map((issue, index) =>
+                                    <EstimatedIssue key={"estimated_" + index} id={issue.id} owner={this.state.owner} avg={issue.average} title={issue.title} estimated={issue.estimated} />
                                 )
                             }
                         </ul>
