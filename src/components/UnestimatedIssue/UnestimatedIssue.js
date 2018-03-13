@@ -35,6 +35,13 @@ class Issue extends Component {
             console.log(error);
         });
     }
+    updateIssueTwo(e) { // this is the duplicate junk that I'm using to demo code climate
+        fire.database().ref('issues').child(this.props.id).update({
+            estimated: !this.props.estimated
+        }).then(() => {}, (error) => {
+            console.log(error);
+        });
+    }
     removeIssue(e) {
         let ref = fire.database().ref('issues');
         let rmIssue = window.confirm("You are about to delete this issue!");
