@@ -1,6 +1,7 @@
-[![Maintainability](https://api.codeclimate.com/v1/badges/c2249bea7d10ab57b4b6/maintainability)](https://codeclimate.com/github/mikegfisher/unknown-stag/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/c2249bea7d10ab57b4b6/test_coverage)](https://codeclimate.com/github/mikegfisher/unknown-stag/test_coverage)
-[![buddy pipeline](https://app.buddy.works/mikegfisher/unknown-stag/pipelines/pipeline/125711/badge.svg?token=cfedb8a2703ddaf7ed8698e6bd27444b34eb8cfd76f14bf643cc31af1dbdab1d "buddy pipeline")](https://app.buddy.works/mikegfisher/unknown-stag/pipelines/pipeline/125711)
+| Code Climate | CI/CD |
+| --- | --- |
+| [![Maintainability](https://api.codeclimate.com/v1/badges/c2249bea7d10ab57b4b6/maintainability)](https://codeclimate.com/github/mikegfisher/unknown-stag/maintainability) | [![buddy pipeline](https://app.buddy.works/mikegfisher/unknown-stag/pipelines/pipeline/125711/badge.svg?token=cfedb8a2703ddaf7ed8698e6bd27444b34eb8cfd76f14bf643cc31af1dbdab1d "buddy pipeline")](https://app.buddy.works/mikegfisher/unknown-stag/pipelines/pipeline/125711) |
+
 
 # Unknown-Stag
 Hey there! Unknown Stag is a points poker app. 
