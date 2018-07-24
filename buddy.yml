@@ -36,7 +36,7 @@
     type: "PUSH"
     disabled: true
     login: "mikegfisher"
-    password: "FR33m4n"
+    password: "${github_password}"
     git_auth_mode: "HTTP"
     target_branch: "master"
     push_url: "https://github.com/mikegfisher/unknown-stag"
