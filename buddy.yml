@@ -13,7 +13,7 @@
     - "npm test"
     - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
     - chmod +x ./cc-test-reporter
-    - ./cc-test-reporter after-build -r 7e6f93d1c72e65cede2c1b20de456b490c6005bab78630cabfe68c3f7871ac9a
+    - "./cc-test-reporter after-build -r ${CC_TEST_COVERAGE_ID}"
     mount_filesystem_path: "/buddy/unknown-stag"
     shell: "SH"
     trigger_condition: "ALWAYS"
