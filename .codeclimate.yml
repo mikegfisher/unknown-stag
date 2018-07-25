@@ -4,3 +4,9 @@ plugins:
 exclude_patterns:
   - "src/registerServiceWorker.js"
   - "src/index.js"
+  - "*.css"
+  - "*.svg"
+  - "*.md"
+  - "docs/"
+  - "*.yml"
+  - "*.json"
