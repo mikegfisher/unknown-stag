@@ -1,4 +1,4 @@
-import '../polyfill.js'
+import '../../polyfill.js'
 import React from 'react';
 import ReactDOM from 'react-dom';
 import UnestimatedIssue from './UnestimatedIssue';
