@@ -45,10 +45,17 @@ class Issue extends Component {
         }
     }
     submitEstimate(e) {
+      if(e) {
         e.preventDefault();
+      }
+
         let p = 0;
         if (this.inputS1) {
             p = this.inputS1.value;
+        }
+        if(!fire.auth().currentUser) {
+          console.log('You must log in to perform this action.');
+          return;
         }
         let newEstimate = fire.database().ref('estimates/' + this.props.id + '/' + fire.auth().currentUser.uid);
         return newEstimate.set({
