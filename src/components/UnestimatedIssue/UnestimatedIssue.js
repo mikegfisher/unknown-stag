@@ -53,17 +53,22 @@ class Issue extends Component {
         if (this.inputS1) {
             p = this.inputS1.value;
         }
-        if(!fire.auth().currentUser) {
-          console.log('You must log in to perform this action.');
-          return;
+        // for testing
+        let user = {
+          uid: "unknown",
+          photoURL: "unknown",
+          displayName: "unknown"
+        };
+        if (fire.auth().currentUser) {
+          user = fire.auth().currentUser.uid;
         }
-        let newEstimate = fire.database().ref('estimates/' + this.props.id + '/' + fire.auth().currentUser.uid);
+        let newEstimate = fire.database().ref('estimates/' + this.props.id + '/' + user.uid);
         return newEstimate.set({
             uid: newEstimate.key,
             points: p,
-            creator_photoURL: fire.auth().currentUser.photoURL,
-            creator_displayName: fire.auth().currentUser.displayName,
-            creator_uid: fire.auth().currentUser.uid
+            creator_photoURL: user.photoURL,
+            creator_displayName: user.displayName,
+            creator_uid: user.uid
         }).then(() => {
             return fire.database().ref('estimates').child(this.props.id).once('value').then((snapshot) => {
                 let estimates = Object.values(snapshot.val());
