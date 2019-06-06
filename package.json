@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "firebase": "^4.13.1",
+    "firebase-tools": "^6.11.0",
     "jest": "^22.3.0",
     "jest-cli": "^22.3.0",
     "object.values": "^1.0.4",
