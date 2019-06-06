@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "firebase": "^4.9.1",
+    "firebase": "^4.13.1",
     "jest": "^22.3.0",
     "jest-cli": "^22.3.0",
     "object.values": "^1.0.4",
