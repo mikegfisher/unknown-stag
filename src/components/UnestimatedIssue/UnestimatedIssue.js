@@ -60,7 +60,7 @@ class Issue extends Component {
           displayName: "unknown"
         };
         if (fire.auth().currentUser) {
-          user = fire.auth().currentUser.uid;
+          user = fire.auth().currentUser;
         }
         let newEstimate = fire.database().ref('estimates/' + this.props.id + '/' + user.uid);
         return newEstimate.set({
@@ -101,7 +101,7 @@ class Issue extends Component {
                     }
                     <form>
                         <p className="range-field">
-                            <input type="range" min="1" max="10" ref={s1 => this.inputS1 = s1} />
+                            <input type="range" min="1" max="100" ref={s1 => this.inputS1 = s1} />
                         </p>
                     </form>
                     {Object.values(this.state.estimates).map((estimate, index) =>
