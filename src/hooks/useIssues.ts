@@ -108,5 +108,12 @@ export function useIssues(sessionId: string | undefined, user: User | null) {
     })
   }
 
-  return { issues, loading, addIssue, deleteIssue, moveIssue, castVote }
+  async function revealVotes(issueId: string) {
+    if (!sessionId) return
+    await updateDoc(doc(db, 'sessions', sessionId, 'issues', issueId), {
+      revealed: true,
+    })
+  }
+
+  return { issues, loading, addIssue, deleteIssue, moveIssue, castVote, revealVotes }
 }
