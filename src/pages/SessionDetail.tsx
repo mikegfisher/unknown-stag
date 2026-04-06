@@ -10,7 +10,7 @@ export default function SessionDetail() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const { session, loading: sessionLoading } = useSession(sessionId)
-  const { issues, loading: issuesLoading, addIssue, deleteIssue, moveIssue, castVote } =
+  const { issues, loading: issuesLoading, addIssue, deleteIssue, moveIssue, castVote, revealVotes } =
     useIssues(sessionId, user)
 
   const [showAddModal, setShowAddModal] = useState(false)
@@ -173,6 +173,7 @@ export default function SessionDetail() {
                 onMoveDown={() => moveIssue(issue.id, 'down')}
                 onDelete={() => setIssueToDelete(issue)}
                 onVote={(value) => castVote(issue.id, value)}
+                onReveal={() => revealVotes(issue.id)}
               />
             ))}
           </div>
@@ -362,6 +363,15 @@ export default function SessionDetail() {
 
 const POKER_VALUES = ['1', '2', '3', '5', '8', '13', '21']
 
+const FIBONACCI = [1, 2, 3, 5, 8, 13, 21]
+
+function roundUpToFibonacci(n: number): number {
+  for (const f of FIBONACCI) {
+    if (f >= n) return f
+  }
+  return FIBONACCI[FIBONACCI.length - 1]
+}
+
 interface IssueRowProps {
   issue: Issue
   index: number
@@ -372,17 +382,28 @@ interface IssueRowProps {
   onMoveDown: () => void
   onDelete: () => void
   onVote: (value: string) => void
+  onReveal: () => void
 }
 
-function IssueRow({ issue, index, total, isOwner, currentUserId, onMoveUp, onMoveDown, onDelete, onVote }: IssueRowProps) {
+function IssueRow({ issue, index, total, isOwner, currentUserId, onMoveUp, onMoveDown, onDelete, onVote, onReveal }: IssueRowProps) {
   const voters = Object.entries(issue.votes ?? {})
   const myVote = currentUserId ? issue.votes?.[currentUserId]?.value ?? null : null
+
+  const fibAverage: number | null = (() => {
+    if (!issue.revealed || voters.length === 0) return null
+    const nums = voters
+      .map(([, v]) => Number(v.value))
+      .filter((n) => !isNaN(n) && n > 0)
+    if (nums.length === 0) return null
+    const avg = nums.reduce((a, b) => a + b, 0) / nums.length
+    return roundUpToFibonacci(avg)
+  })()
 
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-surface)',
-        border: '1px solid var(--color-border)',
+        backgroundColor: issue.revealed ? 'rgba(34, 197, 94, 0.06)' : 'var(--color-surface)',
+        border: issue.revealed ? '1px solid rgba(34, 197, 94, 0.35)' : '1px solid var(--color-border)',
         borderRadius: '0.75rem',
         padding: '1rem 1.25rem',
         display: 'flex',
@@ -482,6 +503,47 @@ function IssueRow({ issue, index, total, isOwner, currentUserId, onMoveUp, onMov
               />
             ))}
           </div>
+        )}
+
+        {/* Fibonacci average — shown after reveal */}
+        {fibAverage !== null && (
+          <div style={{ marginTop: '0.625rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>Average:</span>
+            <span
+              style={{
+                fontSize: '1rem',
+                fontWeight: 700,
+                color: 'var(--color-success)',
+                backgroundColor: 'rgba(34, 197, 94, 0.12)',
+                border: '1px solid rgba(34, 197, 94, 0.3)',
+                borderRadius: '0.375rem',
+                padding: '0.125rem 0.625rem',
+                lineHeight: 1.5,
+              }}
+            >
+              {fibAverage}
+            </span>
+          </div>
+        )}
+
+        {/* Reveal button — owner only, not yet revealed */}
+        {isOwner && !issue.revealed && (
+          <button
+            onClick={onReveal}
+            style={{
+              marginTop: '0.75rem',
+              padding: '0.375rem 0.875rem',
+              border: '1px solid var(--color-primary)',
+              borderRadius: '0.5rem',
+              backgroundColor: 'transparent',
+              color: 'var(--color-primary)',
+              fontSize: '0.8125rem',
+              fontWeight: 500,
+              cursor: 'pointer',
+            }}
+          >
+            Reveal votes
+          </button>
         )}
 
         {/* Voting panel — only shown when not yet revealed */}
