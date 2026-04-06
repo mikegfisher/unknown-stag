@@ -10,7 +10,7 @@ export default function SessionDetail() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const { session, loading: sessionLoading } = useSession(sessionId)
-  const { issues, loading: issuesLoading, addIssue, deleteIssue, moveIssue } =
+  const { issues, loading: issuesLoading, addIssue, deleteIssue, moveIssue, castVote } =
     useIssues(sessionId, user)
 
   const [showAddModal, setShowAddModal] = useState(false)
@@ -168,9 +168,11 @@ export default function SessionDetail() {
                 index={index}
                 total={issues.length}
                 isOwner={!!isOwner}
+                currentUserId={user?.uid ?? null}
                 onMoveUp={() => moveIssue(issue.id, 'up')}
                 onMoveDown={() => moveIssue(issue.id, 'down')}
                 onDelete={() => setIssueToDelete(issue)}
+                onVote={(value) => castVote(issue.id, value)}
               />
             ))}
           </div>
@@ -358,18 +360,23 @@ export default function SessionDetail() {
   )
 }
 
+const POKER_VALUES = ['1', '2', '3', '5', '8', '13', '21']
+
 interface IssueRowProps {
   issue: Issue
   index: number
   total: number
   isOwner: boolean
+  currentUserId: string | null
   onMoveUp: () => void
   onMoveDown: () => void
   onDelete: () => void
+  onVote: (value: string) => void
 }
 
-function IssueRow({ issue, index, total, isOwner, onMoveUp, onMoveDown, onDelete }: IssueRowProps) {
+function IssueRow({ issue, index, total, isOwner, currentUserId, onMoveUp, onMoveDown, onDelete, onVote }: IssueRowProps) {
   const voters = Object.entries(issue.votes ?? {})
+  const myVote = currentUserId ? issue.votes?.[currentUserId]?.value ?? null : null
 
   return (
     <div
@@ -465,10 +472,49 @@ function IssueRow({ issue, index, total, isOwner, onMoveUp, onMoveDown, onDelete
         )}
         {/* Voter avatars */}
         {voters.length > 0 && (
-          <div style={{ display: 'flex', gap: '0.25rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '0.25rem', marginTop: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
             {voters.map(([uid, voter]) => (
-              <VoterAvatar key={uid} displayName={voter.displayName} photoURL={voter.photoURL} />
+              <VoterAvatar
+                key={uid}
+                displayName={voter.displayName}
+                photoURL={voter.photoURL}
+                value={issue.revealed ? (voter.value ?? null) : null}
+              />
             ))}
+          </div>
+        )}
+
+        {/* Voting panel — only shown when not yet revealed */}
+        {!issue.revealed && currentUserId && (
+          <div style={{ display: 'flex', gap: '0.375rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
+            {POKER_VALUES.map((v) => {
+              const selected = myVote === v
+              return (
+                <button
+                  key={v}
+                  onClick={() => onVote(v)}
+                  title={`Vote ${v}`}
+                  style={{
+                    width: '2.25rem',
+                    height: '3rem',
+                    border: selected
+                      ? '2px solid var(--color-primary)'
+                      : '1px solid var(--color-border)',
+                    borderRadius: '0.375rem',
+                    backgroundColor: selected
+                      ? 'var(--color-primary)'
+                      : 'var(--color-surface-elevated)',
+                    color: selected ? '#fff' : 'var(--color-text-secondary)',
+                    fontSize: '0.875rem',
+                    fontWeight: selected ? 700 : 400,
+                    cursor: 'pointer',
+                    transition: 'background-color 0.1s, border-color 0.1s, color 0.1s',
+                  }}
+                >
+                  {v}
+                </button>
+              )
+            })}
           </div>
         )}
       </div>
@@ -497,31 +543,29 @@ function IssueRow({ issue, index, total, isOwner, onMoveUp, onMoveDown, onDelete
   )
 }
 
-function VoterAvatar({ displayName, photoURL }: { displayName: string | null; photoURL: string | null }) {
+function VoterAvatar({ displayName, photoURL, value }: { displayName: string | null; photoURL: string | null; value: string | null }) {
   const initials = displayName
     ? displayName.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()
     : '?'
+  const title = value != null
+    ? `${displayName ?? 'Voter'}: ${value}`
+    : (displayName ?? 'Voter')
 
-  if (photoURL) {
-    return (
-      <img
-        src={photoURL}
-        alt={displayName ?? 'Voter'}
-        title={displayName ?? 'Voter'}
-        style={{
-          width: '24px',
-          height: '24px',
-          borderRadius: '50%',
-          border: '1px solid var(--color-border)',
-          objectFit: 'cover',
-        }}
-      />
-    )
-  }
-
-  return (
+  const avatar = photoURL ? (
+    <img
+      src={photoURL}
+      alt={displayName ?? 'Voter'}
+      style={{
+        width: '24px',
+        height: '24px',
+        borderRadius: '50%',
+        border: '1px solid var(--color-border)',
+        objectFit: 'cover',
+        flexShrink: 0,
+      }}
+    />
+  ) : (
     <div
-      title={displayName ?? 'Voter'}
       style={{
         width: '24px',
         height: '24px',
@@ -539,4 +583,17 @@ function VoterAvatar({ displayName, photoURL }: { displayName: string | null; ph
       {initials}
     </div>
   )
+
+  if (value != null) {
+    return (
+      <div title={title} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.125rem' }}>
+        {avatar}
+        <span style={{ fontSize: '0.625rem', fontWeight: 700, color: 'var(--color-text-secondary)', lineHeight: 1 }}>
+          {value}
+        </span>
+      </div>
+    )
+  }
+
+  return <div title={title}>{avatar}</div>
 }

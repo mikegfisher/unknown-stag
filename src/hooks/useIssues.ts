@@ -9,6 +9,7 @@ import {
   doc,
   serverTimestamp,
   writeBatch,
+  updateDoc,
 } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import type { User } from 'firebase/auth'
@@ -96,5 +97,16 @@ export function useIssues(sessionId: string | undefined, user: User | null) {
     await batch.commit()
   }
 
-  return { issues, loading, addIssue, deleteIssue, moveIssue }
+  async function castVote(issueId: string, value: string) {
+    if (!sessionId || !user) return
+    await updateDoc(doc(db, 'sessions', sessionId, 'issues', issueId), {
+      [`votes.${user.uid}`]: {
+        value,
+        displayName: user.displayName ?? null,
+        photoURL: user.photoURL ?? null,
+      },
+    })
+  }
+
+  return { issues, loading, addIssue, deleteIssue, moveIssue, castVote }
 }
