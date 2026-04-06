@@ -1,0 +1,542 @@
+import { useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
+import { useSession } from '../hooks/useSession'
+import { useIssues } from '../hooks/useIssues'
+import type { Issue } from '../hooks/useIssues'
+
+export default function SessionDetail() {
+  const { sessionId } = useParams<{ sessionId: string }>()
+  const navigate = useNavigate()
+  const { user } = useAuth()
+  const { session, loading: sessionLoading } = useSession(sessionId)
+  const { issues, loading: issuesLoading, addIssue, deleteIssue, moveIssue } =
+    useIssues(sessionId, user)
+
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [newTitle, setNewTitle] = useState('')
+  const [newDescription, setNewDescription] = useState('')
+  const [adding, setAdding] = useState(false)
+  const [issueToDelete, setIssueToDelete] = useState<Issue | null>(null)
+  const [deleting, setDeleting] = useState(false)
+
+  const isOwner = user && session && session.creator_uid === user.uid
+
+  async function handleAddIssue() {
+    if (!newTitle.trim()) return
+    setAdding(true)
+    try {
+      await addIssue(newTitle, newDescription)
+      setNewTitle('')
+      setNewDescription('')
+      setShowAddModal(false)
+    } finally {
+      setAdding(false)
+    }
+  }
+
+  async function handleDeleteIssue() {
+    if (!issueToDelete) return
+    setDeleting(true)
+    try {
+      await deleteIssue(issueToDelete.id)
+      setIssueToDelete(null)
+    } finally {
+      setDeleting(false)
+    }
+  }
+
+  function openAddModal() {
+    setNewTitle('')
+    setNewDescription('')
+    setShowAddModal(true)
+  }
+
+  if (sessionLoading) {
+    return (
+      <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-background)', padding: '2rem' }}>
+        <p style={{ color: 'var(--color-text-secondary)' }}>Loading…</p>
+      </div>
+    )
+  }
+
+  if (!session) {
+    return (
+      <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-background)', padding: '2rem' }}>
+        <p style={{ color: 'var(--color-text-secondary)' }}>Session not found.</p>
+        <button
+          onClick={() => navigate('/dashboard')}
+          style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer' }}
+        >
+          ← Back to dashboard
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-background)', padding: '2rem' }}>
+      <div style={{ maxWidth: '720px', margin: '0 auto' }}>
+
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', minWidth: 0 }}>
+            <button
+              onClick={() => navigate('/dashboard')}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--color-text-secondary)',
+                cursor: 'pointer',
+                fontSize: '1.25rem',
+                padding: '0.25rem',
+                flexShrink: 0,
+              }}
+              title="Back to dashboard"
+            >
+              ←
+            </button>
+            <h1
+              style={{
+                margin: 0,
+                fontSize: '1.5rem',
+                fontWeight: 600,
+                color: 'var(--color-text-primary)',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {session.name}
+            </h1>
+          </div>
+          {isOwner && (
+            <button
+              onClick={openAddModal}
+              style={{
+                flexShrink: 0,
+                backgroundColor: 'var(--color-primary)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '0.5rem',
+                padding: '0.5rem 1rem',
+                fontSize: '0.875rem',
+                fontWeight: 500,
+                cursor: 'pointer',
+              }}
+            >
+              + Add issue
+            </button>
+          )}
+        </div>
+
+        {/* Issue list */}
+        {issuesLoading ? (
+          <p style={{ color: 'var(--color-text-secondary)' }}>Loading issues…</p>
+        ) : issues.length === 0 ? (
+          <div
+            style={{
+              textAlign: 'center',
+              padding: '4rem 2rem',
+              border: '1px dashed var(--color-border)',
+              borderRadius: '0.75rem',
+              color: 'var(--color-text-muted)',
+            }}
+          >
+            <p style={{ marginBottom: '0.75rem' }}>No issues yet.</p>
+            {isOwner && (
+              <button
+                onClick={openAddModal}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--color-primary)',
+                  fontSize: '0.875rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Add your first issue →
+              </button>
+            )}
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {issues.map((issue, index) => (
+              <IssueRow
+                key={issue.id}
+                issue={issue}
+                index={index}
+                total={issues.length}
+                isOwner={!!isOwner}
+                onMoveUp={() => moveIssue(issue.id, 'up')}
+                onMoveDown={() => moveIssue(issue.id, 'down')}
+                onDelete={() => setIssueToDelete(issue)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Add issue modal */}
+      {showAddModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Add issue"
+          onClick={(e) => { if (e.target === e.currentTarget) setShowAddModal(false) }}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 50,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: 'var(--color-surface-elevated)',
+              border: '1px solid var(--color-border)',
+              borderRadius: '0.75rem',
+              padding: '1.5rem',
+              width: '100%',
+              maxWidth: '480px',
+            }}
+          >
+            <h2 style={{ margin: '0 0 1rem 0', fontSize: '1.125rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+              Add issue
+            </h2>
+            <input
+              type="text"
+              placeholder="Issue title"
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) handleAddIssue() }}
+              autoFocus
+              style={{
+                display: 'block',
+                width: '100%',
+                boxSizing: 'border-box',
+                padding: '0.625rem 0.75rem',
+                marginBottom: '0.75rem',
+                backgroundColor: 'var(--color-surface)',
+                border: '1px solid var(--color-border)',
+                borderRadius: '0.5rem',
+                color: 'var(--color-text-primary)',
+                fontSize: '0.875rem',
+                outline: 'none',
+              }}
+            />
+            <textarea
+              placeholder="Description (optional)"
+              value={newDescription}
+              onChange={(e) => setNewDescription(e.target.value)}
+              rows={3}
+              style={{
+                display: 'block',
+                width: '100%',
+                boxSizing: 'border-box',
+                padding: '0.625rem 0.75rem',
+                marginBottom: '1rem',
+                backgroundColor: 'var(--color-surface)',
+                border: '1px solid var(--color-border)',
+                borderRadius: '0.5rem',
+                color: 'var(--color-text-primary)',
+                fontSize: '0.875rem',
+                outline: 'none',
+                resize: 'vertical',
+                fontFamily: 'inherit',
+              }}
+            />
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setShowAddModal(false)}
+                style={{
+                  padding: '0.5rem 1rem',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: '0.5rem',
+                  backgroundColor: 'transparent',
+                  color: 'var(--color-text-secondary)',
+                  fontSize: '0.875rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddIssue}
+                disabled={!newTitle.trim() || adding}
+                style={{
+                  padding: '0.5rem 1rem',
+                  border: 'none',
+                  borderRadius: '0.5rem',
+                  backgroundColor: !newTitle.trim() || adding ? 'var(--color-surface)' : 'var(--color-primary)',
+                  color: !newTitle.trim() || adding ? 'var(--color-text-muted)' : '#fff',
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  cursor: !newTitle.trim() || adding ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {adding ? 'Adding…' : 'Add'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete issue confirmation modal */}
+      {issueToDelete && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Delete issue"
+          onClick={(e) => { if (e.target === e.currentTarget) setIssueToDelete(null) }}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 50,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: 'var(--color-surface-elevated)',
+              border: '1px solid var(--color-border)',
+              borderRadius: '0.75rem',
+              padding: '1.5rem',
+              width: '100%',
+              maxWidth: '400px',
+            }}
+          >
+            <h2 style={{ margin: '0 0 0.5rem 0', fontSize: '1.125rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+              Delete issue?
+            </h2>
+            <p style={{ margin: '0 0 1.25rem 0', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
+              "{issueToDelete.title}" will be permanently deleted. This cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setIssueToDelete(null)}
+                disabled={deleting}
+                style={{
+                  padding: '0.5rem 1rem',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: '0.5rem',
+                  backgroundColor: 'transparent',
+                  color: 'var(--color-text-secondary)',
+                  fontSize: '0.875rem',
+                  cursor: deleting ? 'not-allowed' : 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteIssue}
+                disabled={deleting}
+                style={{
+                  padding: '0.5rem 1rem',
+                  border: 'none',
+                  borderRadius: '0.5rem',
+                  backgroundColor: deleting ? 'var(--color-surface)' : 'var(--color-error)',
+                  color: deleting ? 'var(--color-text-muted)' : '#fff',
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  cursor: deleting ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {deleting ? 'Deleting…' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+interface IssueRowProps {
+  issue: Issue
+  index: number
+  total: number
+  isOwner: boolean
+  onMoveUp: () => void
+  onMoveDown: () => void
+  onDelete: () => void
+}
+
+function IssueRow({ issue, index, total, isOwner, onMoveUp, onMoveDown, onDelete }: IssueRowProps) {
+  const voters = Object.entries(issue.votes ?? {})
+
+  return (
+    <div
+      style={{
+        backgroundColor: 'var(--color-surface)',
+        border: '1px solid var(--color-border)',
+        borderRadius: '0.75rem',
+        padding: '1rem 1.25rem',
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: '0.75rem',
+      }}
+    >
+      {/* Reorder buttons */}
+      {isOwner && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.125rem', flexShrink: 0, paddingTop: '0.125rem' }}>
+          <button
+            onClick={onMoveUp}
+            disabled={index === 0}
+            title="Move up"
+            style={{
+              background: 'none',
+              border: 'none',
+              color: index === 0 ? 'var(--color-border)' : 'var(--color-text-muted)',
+              cursor: index === 0 ? 'default' : 'pointer',
+              padding: '0.125rem 0.25rem',
+              fontSize: '0.75rem',
+              lineHeight: 1,
+              borderRadius: '0.25rem',
+            }}
+          >
+            ▲
+          </button>
+          <button
+            onClick={onMoveDown}
+            disabled={index === total - 1}
+            title="Move down"
+            style={{
+              background: 'none',
+              border: 'none',
+              color: index === total - 1 ? 'var(--color-border)' : 'var(--color-text-muted)',
+              cursor: index === total - 1 ? 'default' : 'pointer',
+              padding: '0.125rem 0.25rem',
+              fontSize: '0.75rem',
+              lineHeight: 1,
+              borderRadius: '0.25rem',
+            }}
+          >
+            ▼
+          </button>
+        </div>
+      )}
+
+      {/* Content */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: issue.description ? '0.375rem' : 0, flexWrap: 'wrap' }}>
+          <span
+            style={{
+              fontSize: '0.9375rem',
+              fontWeight: 500,
+              color: 'var(--color-text-primary)',
+            }}
+          >
+            {issue.title}
+          </span>
+          {/* Revealed status badge */}
+          <span
+            style={{
+              fontSize: '0.6875rem',
+              fontWeight: 600,
+              padding: '0.125rem 0.5rem',
+              borderRadius: '9999px',
+              backgroundColor: issue.revealed ? 'rgba(34, 197, 94, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+              color: issue.revealed ? 'var(--color-success)' : 'var(--color-warning)',
+              letterSpacing: '0.03em',
+              textTransform: 'uppercase',
+            }}
+          >
+            {issue.revealed ? 'Revealed' : 'Voting'}
+          </span>
+        </div>
+        {issue.description && (
+          <p
+            style={{
+              margin: '0 0 0.5rem 0',
+              fontSize: '0.8125rem',
+              color: 'var(--color-text-secondary)',
+              lineHeight: 1.5,
+            }}
+          >
+            {issue.description}
+          </p>
+        )}
+        {/* Voter avatars */}
+        {voters.length > 0 && (
+          <div style={{ display: 'flex', gap: '0.25rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+            {voters.map(([uid, voter]) => (
+              <VoterAvatar key={uid} displayName={voter.displayName} photoURL={voter.photoURL} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Delete button */}
+      {isOwner && (
+        <button
+          onClick={onDelete}
+          title="Delete issue"
+          style={{
+            flexShrink: 0,
+            background: 'none',
+            border: 'none',
+            color: 'var(--color-text-muted)',
+            cursor: 'pointer',
+            padding: '0.125rem 0.25rem',
+            fontSize: '0.875rem',
+            borderRadius: '0.25rem',
+            lineHeight: 1,
+          }}
+        >
+          ✕
+        </button>
+      )}
+    </div>
+  )
+}
+
+function VoterAvatar({ displayName, photoURL }: { displayName: string | null; photoURL: string | null }) {
+  const initials = displayName
+    ? displayName.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()
+    : '?'
+
+  if (photoURL) {
+    return (
+      <img
+        src={photoURL}
+        alt={displayName ?? 'Voter'}
+        title={displayName ?? 'Voter'}
+        style={{
+          width: '24px',
+          height: '24px',
+          borderRadius: '50%',
+          border: '1px solid var(--color-border)',
+          objectFit: 'cover',
+        }}
+      />
+    )
+  }
+
+  return (
+    <div
+      title={displayName ?? 'Voter'}
+      style={{
+        width: '24px',
+        height: '24px',
+        borderRadius: '50%',
+        backgroundColor: 'var(--color-primary)',
+        color: '#fff',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '0.6875rem',
+        fontWeight: 600,
+        flexShrink: 0,
+      }}
+    >
+      {initials}
+    </div>
+  )
+}
