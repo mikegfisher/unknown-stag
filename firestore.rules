@@ -16,12 +16,17 @@ service cloud.firestore {
         && request.auth.uid == resource.data.creator_uid;
 
       // Session issues subcollection: members can read and create issues;
-      // only the issue creator can update or delete their issue
+      // only the issue creator can update or delete their issue;
+      // any authenticated user can cast/update their own vote (votes field only)
       match /issues/{issueId} {
         allow read: if request.auth != null;
         allow create: if request.auth != null;
-        allow update, delete: if request.auth != null
+        allow delete: if request.auth != null
           && request.auth.uid == resource.data.creator_uid;
+        allow update: if request.auth != null && (
+          request.auth.uid == resource.data.creator_uid ||
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['votes'])
+        );
       }
     }
 
