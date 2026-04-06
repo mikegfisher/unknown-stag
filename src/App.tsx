@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 import Dashboard from './pages/Dashboard'
 import LoginPage from './pages/LoginPage'
+import SessionDetail from './pages/SessionDetail'
 
 function App() {
   return (
@@ -12,6 +13,14 @@ function App() {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/sessions/:sessionId"
+        element={
+          <ProtectedRoute>
+            <SessionDetail />
           </ProtectedRoute>
         }
       />

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { collection, addDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { useAuth } from '../hooks/useAuth'
@@ -8,6 +9,7 @@ import type { Session } from '../hooks/useSessions'
 export default function Dashboard() {
   const { user, signOut } = useAuth()
   const { sessions, loading } = useSessions(user)
+  const navigate = useNavigate()
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [newSessionName, setNewSessionName] = useState('')
   const [creating, setCreating] = useState(false)
@@ -139,11 +141,13 @@ export default function Dashboard() {
             {sessions.map((session) => (
               <div
                 key={session.id}
+                onClick={() => navigate(`/sessions/${session.id}`)}
                 style={{
                   backgroundColor: 'var(--color-surface)',
                   border: '1px solid var(--color-border)',
                   borderRadius: '0.75rem',
                   padding: '1.25rem',
+                  cursor: 'pointer',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '0.875rem' }}>
@@ -164,7 +168,7 @@ export default function Dashboard() {
                   </h2>
                   {user && session.creator_uid === user.uid && (
                     <button
-                      onClick={() => setSessionToDelete(session)}
+                      onClick={(e) => { e.stopPropagation(); setSessionToDelete(session) }}
                       title="Delete session"
                       style={{
                         marginLeft: '0.5rem',
