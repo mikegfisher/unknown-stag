@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { collection, addDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { useAuth } from '../hooks/useAuth'
 import { useSessions } from '../hooks/useSessions'
+import type { Session } from '../hooks/useSessions'
 
 export default function Dashboard() {
   const { user, signOut } = useAuth()
@@ -10,6 +11,8 @@ export default function Dashboard() {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [newSessionName, setNewSessionName] = useState('')
   const [creating, setCreating] = useState(false)
+  const [sessionToDelete, setSessionToDelete] = useState<Session | null>(null)
+  const [deleting, setDeleting] = useState(false)
 
   async function createSession() {
     if (!user || !newSessionName.trim()) return
@@ -19,6 +22,7 @@ export default function Dashboard() {
         name: newSessionName.trim(),
         creator_uid: user.uid,
         memberIds: [user.uid],
+        integrations: [],
         openIssues: 0,
         revealedIssues: 0,
         createdAt: serverTimestamp(),
@@ -30,6 +34,17 @@ export default function Dashboard() {
     }
   }
 
+  async function deleteSession() {
+    if (!sessionToDelete) return
+    setDeleting(true)
+    try {
+      await deleteDoc(doc(db, 'sessions', sessionToDelete.id))
+      setSessionToDelete(null)
+    } finally {
+      setDeleting(false)
+    }
+  }
+
   function openCreateModal() {
     setNewSessionName('')
     setShowCreateModal(true)
@@ -38,6 +53,10 @@ export default function Dashboard() {
   function closeCreateModal() {
     setShowCreateModal(false)
     setNewSessionName('')
+  }
+
+  function closeDeleteModal() {
+    setSessionToDelete(null)
   }
 
   return (
@@ -127,19 +146,43 @@ export default function Dashboard() {
                   padding: '1.25rem',
                 }}
               >
-                <h2
-                  style={{
-                    margin: '0 0 0.875rem 0',
-                    fontSize: '1rem',
-                    fontWeight: 600,
-                    color: 'var(--color-text-primary)',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {session.name}
-                </h2>
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '0.875rem' }}>
+                  <h2
+                    style={{
+                      margin: 0,
+                      fontSize: '1rem',
+                      fontWeight: 600,
+                      color: 'var(--color-text-primary)',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      flex: 1,
+                      minWidth: 0,
+                    }}
+                  >
+                    {session.name}
+                  </h2>
+                  {user && session.creator_uid === user.uid && (
+                    <button
+                      onClick={() => setSessionToDelete(session)}
+                      title="Delete session"
+                      style={{
+                        marginLeft: '0.5rem',
+                        flexShrink: 0,
+                        background: 'none',
+                        border: 'none',
+                        color: 'var(--color-text-muted)',
+                        cursor: 'pointer',
+                        padding: '0.125rem 0.25rem',
+                        fontSize: '0.875rem',
+                        borderRadius: '0.25rem',
+                        lineHeight: 1,
+                      }}
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
                 <div style={{ display: 'flex', gap: '1.25rem' }}>
                   <span style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)' }}>
                     <span style={{ fontWeight: 600, color: 'var(--color-warning)' }}>
@@ -241,6 +284,76 @@ export default function Dashboard() {
                 }}
               >
                 {creating ? 'Creating…' : 'Create'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete session confirmation modal */}
+      {sessionToDelete && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Delete session"
+          onClick={(e) => { if (e.target === e.currentTarget) closeDeleteModal() }}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 50,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: 'var(--color-surface-elevated)',
+              border: '1px solid var(--color-border)',
+              borderRadius: '0.75rem',
+              padding: '1.5rem',
+              width: '100%',
+              maxWidth: '400px',
+            }}
+          >
+            <h2 style={{ margin: '0 0 0.5rem 0', fontSize: '1.125rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+              Delete session?
+            </h2>
+            <p style={{ margin: '0 0 1.25rem 0', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
+              "{sessionToDelete.name}" will be permanently deleted. This cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+              <button
+                onClick={closeDeleteModal}
+                disabled={deleting}
+                style={{
+                  padding: '0.5rem 1rem',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: '0.5rem',
+                  backgroundColor: 'transparent',
+                  color: 'var(--color-text-secondary)',
+                  fontSize: '0.875rem',
+                  cursor: deleting ? 'not-allowed' : 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={deleteSession}
+                disabled={deleting}
+                style={{
+                  padding: '0.5rem 1rem',
+                  border: 'none',
+                  borderRadius: '0.5rem',
+                  backgroundColor: deleting ? 'var(--color-surface)' : 'var(--color-error)',
+                  color: deleting ? 'var(--color-text-muted)' : '#fff',
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  cursor: deleting ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {deleting ? 'Deleting…' : 'Delete'}
               </button>
             </div>
           </div>
