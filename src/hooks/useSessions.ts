@@ -14,6 +14,7 @@ export interface Session {
   name: string
   creator_uid: string
   memberIds: string[]
+  integrations: string[]
   openIssues: number
   revealedIssues: number
   createdAt: { toMillis: () => number } | null
