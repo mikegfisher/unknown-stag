@@ -16,8 +16,8 @@ interface AuthState {
 }
 
 export function useAuth(): AuthState {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState<User | null>(auth.currentUser)
+  const [loading, setLoading] = useState(!auth.currentUser)
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {

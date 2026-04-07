@@ -4,7 +4,6 @@ import {
   query,
   where,
   onSnapshot,
-  orderBy,
 } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import type { User } from 'firebase/auth'
@@ -40,16 +39,14 @@ export function useSessions(user: User | null, authLoading = false) {
     const q = query(
       collection(db, 'sessions'),
       where('memberIds', 'array-contains', user.uid),
-      orderBy('createdAt', 'desc'),
     )
 
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
-        const list = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...(doc.data() as Omit<Session, 'id'>),
-        }))
+        const list = snapshot.docs
+          .map((doc) => ({ id: doc.id, ...(doc.data() as Omit<Session, 'id'>) }))
+          .sort((a, b) => (b.createdAt?.toMillis() ?? 0) - (a.createdAt?.toMillis() ?? 0))
         setSessions(list)
         setLoading(false)
         setError(null)
