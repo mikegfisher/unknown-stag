@@ -10,6 +10,7 @@ import {
   serverTimestamp,
   writeBatch,
   updateDoc,
+  increment,
 } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import type { User } from 'firebase/auth'
@@ -81,11 +82,20 @@ export function useIssues(sessionId: string | undefined, user: User | null) {
       creator_uid: user.uid,
       createdAt: serverTimestamp(),
     })
+    await updateDoc(doc(db, 'sessions', sessionId), {
+      openIssues: increment(1),
+    })
   }
 
   async function deleteIssue(issueId: string) {
     if (!sessionId) return
+    const issue = issues.find((i) => i.id === issueId)
     await deleteDoc(doc(db, 'sessions', sessionId, 'issues', issueId))
+    if (issue) {
+      await updateDoc(doc(db, 'sessions', sessionId), {
+        [issue.revealed ? 'revealedIssues' : 'openIssues']: increment(-1),
+      })
+    }
   }
 
   async function moveIssue(issueId: string, direction: 'up' | 'down') {
@@ -121,6 +131,10 @@ export function useIssues(sessionId: string | undefined, user: User | null) {
     if (!sessionId) return
     await updateDoc(doc(db, 'sessions', sessionId, 'issues', issueId), {
       revealed: true,
+    })
+    await updateDoc(doc(db, 'sessions', sessionId), {
+      openIssues: increment(-1),
+      revealedIssues: increment(1),
     })
   }
 
