@@ -24,6 +24,7 @@ export interface Session {
 export function useSessions(user: User | null) {
   const [sessions, setSessions] = useState<Session[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!user) {
@@ -38,17 +39,25 @@ export function useSessions(user: User | null) {
       orderBy('createdAt', 'desc'),
     )
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const list = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as Omit<Session, 'id'>),
-      }))
-      setSessions(list)
-      setLoading(false)
-    })
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const list = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...(doc.data() as Omit<Session, 'id'>),
+        }))
+        setSessions(list)
+        setLoading(false)
+        setError(null)
+      },
+      () => {
+        setError('Failed to load sessions. Please refresh.')
+        setLoading(false)
+      },
+    )
 
     return unsubscribe
   }, [user])
 
-  return { sessions, loading }
+  return { sessions, loading, error }
 }

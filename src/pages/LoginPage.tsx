@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 
@@ -7,6 +7,8 @@ export default function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const from = (location.state as { from?: string } | null)?.from ?? '/dashboard'
+  const [signingIn, setSigningIn] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!loading && user) {
@@ -14,16 +16,94 @@ export default function LoginPage() {
     }
   }, [user, loading, navigate, from])
 
+  async function handleSignIn() {
+    setError(null)
+    setSigningIn(true)
+    try {
+      await signIn()
+    } catch {
+      setError('Sign-in failed. Please try again.')
+    } finally {
+      setSigningIn(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--color-background)' }}>
+        <div
+          style={{
+            width: '2rem',
+            height: '2rem',
+            borderRadius: '50%',
+            border: '3px solid var(--color-border)',
+            borderTopColor: 'var(--color-primary)',
+            animation: 'spin 0.75s linear infinite',
+          }}
+        />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-sm text-center">
-        <h1 className="text-2xl font-semibold mb-2">Welcome</h1>
-        <p className="text-gray-500 mb-6">Sign in to continue</p>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--color-background)' }}>
+      <div
+        style={{
+          backgroundColor: 'var(--color-surface-elevated)',
+          border: '1px solid var(--color-border)',
+          padding: '2rem',
+          borderRadius: '1rem',
+          width: '100%',
+          maxWidth: '360px',
+          textAlign: 'center',
+        }}
+      >
+        <h1 style={{ margin: '0 0 0.375rem 0', fontSize: '1.5rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+          Asyncast
+        </h1>
+        <p style={{ margin: '0 0 1.5rem 0', fontSize: '0.9375rem', color: 'var(--color-text-secondary)' }}>
+          Sign in to continue
+        </p>
+
+        {error && (
+          <div
+            style={{
+              marginBottom: '1rem',
+              padding: '0.625rem 0.875rem',
+              backgroundColor: 'var(--color-warning-surface)',
+              border: '1px solid var(--color-warning-border)',
+              borderRadius: '0.5rem',
+              fontSize: '0.875rem',
+              color: 'var(--color-warning)',
+              textAlign: 'left',
+            }}
+          >
+            {error}
+          </div>
+        )}
+
         <button
-          onClick={signIn}
-          className="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium hover:bg-gray-50 transition-colors"
+          onClick={handleSignIn}
+          disabled={signingIn}
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.75rem',
+            border: '1px solid var(--color-border)',
+            borderRadius: '0.5rem',
+            padding: '0.625rem 1rem',
+            fontSize: '0.9375rem',
+            fontWeight: 500,
+            color: signingIn ? 'var(--color-text-muted)' : 'var(--color-text-primary)',
+            backgroundColor: signingIn ? 'var(--color-surface)' : 'var(--color-surface-elevated)',
+            cursor: signingIn ? 'not-allowed' : 'pointer',
+            transition: 'background-color 0.15s',
+          }}
         >
-          <svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
             <path
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
               fill="#4285F4"
@@ -41,7 +121,7 @@ export default function LoginPage() {
               fill="#EA4335"
             />
           </svg>
-          Sign in with Google
+          {signingIn ? 'Signing in…' : 'Sign in with Google'}
         </button>
       </div>
     </div>

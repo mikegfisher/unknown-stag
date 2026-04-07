@@ -34,6 +34,7 @@ export interface Issue {
 export function useIssues(sessionId: string | undefined, user: User | null) {
   const [issues, setIssues] = useState<Issue[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!sessionId || !user) {
@@ -47,14 +48,22 @@ export function useIssues(sessionId: string | undefined, user: User | null) {
       orderBy('order', 'asc'),
     )
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const list = snapshot.docs.map((d) => ({
-        id: d.id,
-        ...(d.data() as Omit<Issue, 'id'>),
-      }))
-      setIssues(list)
-      setLoading(false)
-    })
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const list = snapshot.docs.map((d) => ({
+          id: d.id,
+          ...(d.data() as Omit<Issue, 'id'>),
+        }))
+        setIssues(list)
+        setLoading(false)
+        setError(null)
+      },
+      () => {
+        setError('Failed to load issues. Please refresh.')
+        setLoading(false)
+      },
+    )
 
     return unsubscribe
   }, [sessionId, user])
@@ -115,5 +124,5 @@ export function useIssues(sessionId: string | undefined, user: User | null) {
     })
   }
 
-  return { issues, loading, addIssue, deleteIssue, moveIssue, castVote, revealVotes }
+  return { issues, loading, error, addIssue, deleteIssue, moveIssue, castVote, revealVotes }
 }

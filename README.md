@@ -3,23 +3,75 @@
 | [![Maintainability](https://api.codeclimate.com/v1/badges/c2249bea7d10ab57b4b6/maintainability)](https://codeclimate.com/github/mikegfisher/unknown-stag/maintainability) | [![test coverage](https://api.codeclimate.com/v1/badges/c2249bea7d10ab57b4b6/test_coverage)](https://codeclimate.com/github/mikegfisher/unknown-stag/test_coverage) | [![buddy pipeline](https://app.buddy.works/mikegfisher/unknown-stag/pipelines/pipeline/125711/badge.svg?token=cfedb8a2703ddaf7ed8698e6bd27444b34eb8cfd76f14bf643cc31af1dbdab1d "buddy pipeline")](https://app.buddy.works/mikegfisher/unknown-stag/pipelines/pipeline/125711) |
 
 
-# Unknown-Stag
-Hey there! Unknown Stag is a points poker app.
+# Asyncast
 
-### What is points poker you ask?
-Points poker is a way to sort of gamify estimating the level of effort on a task (or user story). Users start by creating a points poker session where a team will get together to estimate a defined scope of work. Then, each team member will submit their estimates secretly until all estimates are submitted. **Not everyone is required to submit an estimate.** The session creator determines when an issue can be marked estimated. At that time, everyone's estimate will become visible, along with the average estimate (rounded up) across the team for that issue.
+Asyncast is a real-time planning poker app for async teams. Collaborators create voting sessions, add issues to estimate, and reveal story points together — no matter where everyone is working from.
 
-### Cool, umm can you explain points a little bit to me?
-Points are like miles on your project/product roadmap. Now, those of us who drive know that sometimes it takes less than a minute to travel a mile, but sometimes it takes 30 minutes. On average though, your velocity on roadtrips is probably about 55mph. This same concept can be applied to planning and estimating work on your projects. You just have to measure level of effort - points - consistently.
+### What is planning poker?
+
+Planning poker is a technique for estimating the level of effort for tasks or user stories. The session owner adds issues, team members vote secretly using Fibonacci-scale point values (1, 2, 3, 5, 8, 13, 21), and when the owner reveals votes everyone sees the results along with the rounded average. This helps teams align on estimates without anchoring bias.
+
+### How points work
+
+Points measure level of effort, not time. Like miles on a road trip — the same distance can take very different amounts of time depending on conditions — points represent relative complexity. Once a team calibrates their velocity, points become a reliable planning tool.
 
 ## Live URLs
 - https://stag.mikegfisher.com
 - https://unknown-stag.firebaseapp.com
 
 ## Setup
-1. `git clone`
-2. `npm install`
-3. Sign up for [Firebase](https://firebase.google.com) if you have not already.
-4. Update the `fire.js` file with your dev project config object.
-5. **NOTE** Step 4 is _mandatory_ - localhost is not an authorized domain for the production Firebase.
-6. `npm start`
+
+### Prerequisites
+- [Node.js](https://nodejs.org) v18+
+- A [Firebase](https://firebase.google.com) project with **Authentication** (Google provider), **Firestore**, and **Hosting** enabled
+
+### Local development
+
+1. Clone the repo
+   ```bash
+   git clone https://github.com/mikegfisher/unknown-stag.git
+   cd unknown-stag
+   ```
+
+2. Install dependencies
+   ```bash
+   npm install
+   ```
+
+3. Configure Firebase
+
+   Copy the Firebase config object from your Firebase project console (Project Settings → Your apps → SDK setup) and create `src/lib/firebase.ts`:
+   ```ts
+   import { initializeApp } from 'firebase/app'
+   import { getAuth } from 'firebase/auth'
+   import { getFirestore } from 'firebase/firestore'
+
+   const firebaseConfig = {
+     apiKey: '...',
+     authDomain: '...',
+     projectId: '...',
+     storageBucket: '...',
+     messagingSenderId: '...',
+     appId: '...',
+   }
+
+   const app = initializeApp(firebaseConfig)
+   export const auth = getAuth(app)
+   export const db = getFirestore(app)
+   ```
+
+   > **Note:** `localhost` is not an authorized domain for the production Firebase project. You must configure your own Firebase project for local development.
+
+4. Start the dev server
+   ```bash
+   npm run dev
+   ```
+
+### Deploy to Firebase Hosting
+
+```bash
+npm run build
+npx firebase deploy --only hosting
+```
+
+The app is configured to deploy the `dist/` folder to Firebase Hosting with SPA rewrites so all routes resolve to `index.html`.
