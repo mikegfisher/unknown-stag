@@ -17,6 +17,7 @@ export interface Session {
   integrations: string[]
   openIssues: number
   revealedIssues: number
+  inviteToken?: string
   createdAt: { toMillis: () => number } | null
 }
 

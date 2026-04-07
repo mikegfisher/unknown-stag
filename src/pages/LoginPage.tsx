@@ -1,16 +1,18 @@
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 
 export default function LoginPage() {
   const { user, loading, signIn } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const from = (location.state as { from?: string } | null)?.from ?? '/dashboard'
 
   useEffect(() => {
     if (!loading && user) {
-      navigate('/dashboard')
+      navigate(from, { replace: true })
     }
-  }, [user, loading, navigate])
+  }, [user, loading, navigate, from])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">

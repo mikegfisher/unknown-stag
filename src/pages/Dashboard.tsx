@@ -27,6 +27,7 @@ export default function Dashboard() {
         integrations: [],
         openIssues: 0,
         revealedIssues: 0,
+        inviteToken: crypto.randomUUID(),
         createdAt: serverTimestamp(),
       })
       setNewSessionName('')

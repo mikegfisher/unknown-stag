@@ -8,12 +8,21 @@ service cloud.firestore {
     }
 
     // Sessions: authenticated users can create and read sessions;
-    // only the creator can update or delete their session
+    // only the creator can update or delete their session;
+    // any authenticated user may add themselves to memberIds (invite join)
     match /sessions/{sessionId} {
       allow read: if request.auth != null;
       allow create: if request.auth != null;
-      allow update, delete: if request.auth != null
+      allow delete: if request.auth != null
         && request.auth.uid == resource.data.creator_uid;
+      allow update: if request.auth != null && (
+        request.auth.uid == resource.data.creator_uid
+        || (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds'])
+          && request.resource.data.memberIds.hasAll(resource.data.memberIds)
+          && request.resource.data.memberIds.hasAll([request.auth.uid])
+        )
+      );
 
       // Session issues subcollection: members can read and create issues;
       // only the issue creator can update or delete their issue;
