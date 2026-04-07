@@ -453,11 +453,11 @@ export default function SessionDetail() {
                 outline: 'none',
               }}
             />
-            <textarea
-              placeholder="Description (optional)"
-              value={newDescription}
-              onChange={(e) => setNewDescription(e.target.value)}
-              rows={3}
+            <input
+              type="url"
+              placeholder="External link (optional)"
+              value={newExternalUrl}
+              onChange={(e) => setNewExternalUrl(e.target.value)}
               style={{
                 display: 'block',
                 width: '100%',
@@ -470,15 +470,13 @@ export default function SessionDetail() {
                 color: 'var(--color-text-primary)',
                 fontSize: '0.875rem',
                 outline: 'none',
-                resize: 'vertical',
-                fontFamily: 'inherit',
               }}
             />
-            <input
-              type="url"
-              placeholder="External link (optional)"
-              value={newExternalUrl}
-              onChange={(e) => setNewExternalUrl(e.target.value)}
+            <textarea
+              placeholder="Description (optional)"
+              value={newDescription}
+              onChange={(e) => setNewDescription(e.target.value)}
+              rows={3}
               style={{
                 display: 'block',
                 width: '100%',
@@ -491,6 +489,8 @@ export default function SessionDetail() {
                 color: 'var(--color-text-primary)',
                 fontSize: '0.875rem',
                 outline: 'none',
+                resize: 'vertical',
+                fontFamily: 'inherit',
               }}
             />
             <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
@@ -600,6 +600,19 @@ export default function SessionDetail() {
       )}
     </div>
   )
+}
+
+function getExternalLinkLabel(url: string): string {
+  try {
+    const hostname = new URL(url).hostname
+    if (hostname.includes('atlassian.net')) return 'Jira'
+    if (hostname.includes('github.com')) return 'GitHub'
+    if (hostname.includes('linear.app')) return 'Linear'
+    if (hostname.includes('notion.so')) return 'Notion'
+    return hostname.replace(/^www\./, '')
+  } catch {
+    return 'External link'
+  }
 }
 
 const POKER_VALUES = ['1', '2', '3', '5', '8', '13', '21']
@@ -741,7 +754,7 @@ function IssueRow({ issue, index, total, isOwner, isMember, currentUserId, onMov
               <path d="M5 2H2a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V7" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
               <path d="M8 1h3m0 0v3m0-3L5.5 6.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            External link
+            {getExternalLinkLabel(issue.externalUrl)}
           </a>
         )}
         {issue.description && (
