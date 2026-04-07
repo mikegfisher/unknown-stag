@@ -12,8 +12,18 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--color-background)' }}>
+        <div
+          style={{
+            width: '2rem',
+            height: '2rem',
+            borderRadius: '50%',
+            border: '3px solid var(--color-border)',
+            borderTopColor: 'var(--color-primary)',
+            animation: 'spin 0.75s linear infinite',
+          }}
+        />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     )
   }

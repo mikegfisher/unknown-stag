@@ -12,8 +12,8 @@ export default function SessionDetail() {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const { user } = useAuth()
-  const { session, loading: sessionLoading } = useSession(sessionId)
-  const { issues, loading: issuesLoading, addIssue, deleteIssue, moveIssue, castVote, revealVotes } =
+  const { session, loading: sessionLoading, error: sessionError } = useSession(sessionId)
+  const { issues, loading: issuesLoading, error: issuesError, addIssue, deleteIssue, moveIssue, castVote, revealVotes } =
     useIssues(sessionId, user)
 
   const [showAddModal, setShowAddModal] = useState(false)
@@ -111,10 +111,36 @@ export default function SessionDetail() {
     )
   }
 
+  if (sessionError) {
+    return (
+      <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-background)', padding: '2rem' }}>
+        <div
+          style={{
+            padding: '0.875rem 1rem',
+            backgroundColor: 'var(--color-warning-surface)',
+            border: '1px solid var(--color-warning-border)',
+            borderRadius: '0.5rem',
+            fontSize: '0.875rem',
+            color: 'var(--color-warning)',
+            marginBottom: '1rem',
+          }}
+        >
+          {sessionError}
+        </div>
+        <button
+          onClick={() => navigate('/dashboard')}
+          style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer' }}
+        >
+          ← Back to dashboard
+        </button>
+      </div>
+    )
+  }
+
   if (!session) {
     return (
       <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-background)', padding: '2rem' }}>
-        <p style={{ color: 'var(--color-text-secondary)' }}>Session not found.</p>
+        <p style={{ color: 'var(--color-text-secondary)', marginBottom: '0.75rem' }}>Session not found.</p>
         <button
           onClick={() => navigate('/dashboard')}
           style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer' }}
@@ -184,7 +210,7 @@ export default function SessionDetail() {
                 onClick={openAddModal}
                 style={{
                   backgroundColor: 'var(--color-primary)',
-                  color: '#fff',
+                  color: 'var(--color-text-inverse)',
                   border: 'none',
                   borderRadius: '0.5rem',
                   padding: '0.5rem 1rem',
@@ -205,8 +231,8 @@ export default function SessionDetail() {
             style={{
               marginBottom: '1.25rem',
               padding: '0.75rem 1rem',
-              backgroundColor: 'rgba(245, 158, 11, 0.08)',
-              border: '1px solid rgba(245, 158, 11, 0.3)',
+              backgroundColor: 'var(--color-warning-surface)',
+              border: '1px solid var(--color-warning-border)',
               borderRadius: '0.5rem',
               fontSize: '0.875rem',
               color: 'var(--color-warning)',
@@ -219,6 +245,19 @@ export default function SessionDetail() {
         {/* Issue list */}
         {issuesLoading ? (
           <p style={{ color: 'var(--color-text-secondary)' }}>Loading issues…</p>
+        ) : issuesError ? (
+          <div
+            style={{
+              padding: '0.875rem 1rem',
+              backgroundColor: 'var(--color-warning-surface)',
+              border: '1px solid var(--color-warning-border)',
+              borderRadius: '0.5rem',
+              fontSize: '0.875rem',
+              color: 'var(--color-warning)',
+            }}
+          >
+            {issuesError}
+          </div>
         ) : issues.length === 0 ? (
           <div
             style={{
@@ -277,7 +316,7 @@ export default function SessionDetail() {
           style={{
             position: 'fixed',
             inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            backgroundColor: 'var(--color-overlay)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -329,7 +368,7 @@ export default function SessionDetail() {
                     border: 'none',
                     borderRadius: '0.5rem',
                     backgroundColor: inviteLinkCopied ? 'var(--color-success)' : 'var(--color-primary)',
-                    color: '#fff',
+                    color: 'var(--color-text-inverse)',
                     fontSize: '0.875rem',
                     fontWeight: 500,
                     cursor: 'pointer',
@@ -370,7 +409,7 @@ export default function SessionDetail() {
           style={{
             position: 'fixed',
             inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            backgroundColor: 'var(--color-overlay)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -455,7 +494,7 @@ export default function SessionDetail() {
                   border: 'none',
                   borderRadius: '0.5rem',
                   backgroundColor: !newTitle.trim() || adding ? 'var(--color-surface)' : 'var(--color-primary)',
-                  color: !newTitle.trim() || adding ? 'var(--color-text-muted)' : '#fff',
+                  color: !newTitle.trim() || adding ? 'var(--color-text-muted)' : 'var(--color-text-inverse)',
                   fontSize: '0.875rem',
                   fontWeight: 500,
                   cursor: !newTitle.trim() || adding ? 'not-allowed' : 'pointer',
@@ -478,7 +517,7 @@ export default function SessionDetail() {
           style={{
             position: 'fixed',
             inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            backgroundColor: 'var(--color-overlay)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -525,7 +564,7 @@ export default function SessionDetail() {
                   border: 'none',
                   borderRadius: '0.5rem',
                   backgroundColor: deleting ? 'var(--color-surface)' : 'var(--color-error)',
-                  color: deleting ? 'var(--color-text-muted)' : '#fff',
+                  color: deleting ? 'var(--color-text-muted)' : 'var(--color-text-inverse)',
                   fontSize: '0.875rem',
                   fontWeight: 500,
                   cursor: deleting ? 'not-allowed' : 'pointer',
@@ -583,8 +622,8 @@ function IssueRow({ issue, index, total, isOwner, isMember, currentUserId, onMov
   return (
     <div
       style={{
-        backgroundColor: issue.revealed ? 'rgba(34, 197, 94, 0.06)' : 'var(--color-surface)',
-        border: issue.revealed ? '1px solid rgba(34, 197, 94, 0.35)' : '1px solid var(--color-border)',
+        backgroundColor: issue.revealed ? 'var(--color-success-surface)' : 'var(--color-surface)',
+        border: issue.revealed ? '1px solid var(--color-success-border)' : '1px solid var(--color-border)',
         borderRadius: '0.75rem',
         padding: '1rem 1.25rem',
         display: 'flex',
@@ -651,7 +690,7 @@ function IssueRow({ issue, index, total, isOwner, isMember, currentUserId, onMov
               fontWeight: 600,
               padding: '0.125rem 0.5rem',
               borderRadius: '9999px',
-              backgroundColor: issue.revealed ? 'rgba(34, 197, 94, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+              backgroundColor: issue.revealed ? 'var(--color-success-badge-bg)' : 'var(--color-warning-badge-bg)',
               color: issue.revealed ? 'var(--color-success)' : 'var(--color-warning)',
               letterSpacing: '0.03em',
               textTransform: 'uppercase',
@@ -695,8 +734,8 @@ function IssueRow({ issue, index, total, isOwner, isMember, currentUserId, onMov
                 fontSize: '1rem',
                 fontWeight: 700,
                 color: 'var(--color-success)',
-                backgroundColor: 'rgba(34, 197, 94, 0.12)',
-                border: '1px solid rgba(34, 197, 94, 0.3)',
+                backgroundColor: 'var(--color-success-chip-bg)',
+                border: '1px solid var(--color-success-chip-border)',
                 borderRadius: '0.375rem',
                 padding: '0.125rem 0.625rem',
                 lineHeight: 1.5,
@@ -747,7 +786,7 @@ function IssueRow({ issue, index, total, isOwner, isMember, currentUserId, onMov
                     backgroundColor: selected
                       ? 'var(--color-primary)'
                       : 'var(--color-surface-elevated)',
-                    color: selected ? '#fff' : 'var(--color-text-secondary)',
+                    color: selected ? 'var(--color-text-inverse)' : 'var(--color-text-secondary)',
                     fontSize: '0.875rem',
                     fontWeight: selected ? 700 : 400,
                     cursor: 'pointer',
@@ -814,7 +853,7 @@ function VoterAvatar({ displayName, photoURL, value }: { displayName: string | n
         height: '24px',
         borderRadius: '50%',
         backgroundColor: 'var(--color-primary)',
-        color: '#fff',
+        color: 'var(--color-text-inverse)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

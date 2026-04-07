@@ -8,7 +8,7 @@ import type { Session } from '../hooks/useSessions'
 
 export default function Dashboard() {
   const { user, signOut } = useAuth()
-  const { sessions, loading } = useSessions(user)
+  const { sessions, loading, error } = useSessions(user)
   const navigate = useNavigate()
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [newSessionName, setNewSessionName] = useState('')
@@ -76,7 +76,7 @@ export default function Dashboard() {
               onClick={openCreateModal}
               style={{
                 backgroundColor: 'var(--color-primary)',
-                color: '#fff',
+                color: 'var(--color-text-inverse)',
                 border: 'none',
                 borderRadius: '0.5rem',
                 padding: '0.5rem 1rem',
@@ -107,6 +107,19 @@ export default function Dashboard() {
         {/* Session list */}
         {loading ? (
           <p style={{ color: 'var(--color-text-secondary)' }}>Loading sessions…</p>
+        ) : error ? (
+          <div
+            style={{
+              padding: '0.875rem 1rem',
+              backgroundColor: 'var(--color-warning-surface)',
+              border: '1px solid var(--color-warning-border)',
+              borderRadius: '0.5rem',
+              fontSize: '0.875rem',
+              color: 'var(--color-warning)',
+            }}
+          >
+            {error}
+          </div>
         ) : sessions.length === 0 ? (
           <div
             style={{
@@ -218,7 +231,7 @@ export default function Dashboard() {
           style={{
             position: 'fixed',
             inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            backgroundColor: 'var(--color-overlay)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -282,7 +295,7 @@ export default function Dashboard() {
                   border: 'none',
                   borderRadius: '0.5rem',
                   backgroundColor: !newSessionName.trim() || creating ? 'var(--color-surface)' : 'var(--color-primary)',
-                  color: !newSessionName.trim() || creating ? 'var(--color-text-muted)' : '#fff',
+                  color: !newSessionName.trim() || creating ? 'var(--color-text-muted)' : 'var(--color-text-inverse)',
                   fontSize: '0.875rem',
                   fontWeight: 500,
                   cursor: !newSessionName.trim() || creating ? 'not-allowed' : 'pointer',
@@ -305,7 +318,7 @@ export default function Dashboard() {
           style={{
             position: 'fixed',
             inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            backgroundColor: 'var(--color-overlay)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -352,7 +365,7 @@ export default function Dashboard() {
                   border: 'none',
                   borderRadius: '0.5rem',
                   backgroundColor: deleting ? 'var(--color-surface)' : 'var(--color-error)',
-                  color: deleting ? 'var(--color-text-muted)' : '#fff',
+                  color: deleting ? 'var(--color-text-muted)' : 'var(--color-text-inverse)',
                   fontSize: '0.875rem',
                   fontWeight: 500,
                   cursor: deleting ? 'not-allowed' : 'pointer',
