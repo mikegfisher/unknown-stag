@@ -1,5 +1,7 @@
-import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useState, useEffect, useRef } from 'react'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
+import { doc, updateDoc, arrayUnion } from 'firebase/firestore'
+import { db } from '../lib/firebase'
 import { useAuth } from '../hooks/useAuth'
 import { useSession } from '../hooks/useSession'
 import { useIssues } from '../hooks/useIssues'
@@ -8,6 +10,7 @@ import type { Issue } from '../hooks/useIssues'
 export default function SessionDetail() {
   const { sessionId } = useParams<{ sessionId: string }>()
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const { user } = useAuth()
   const { session, loading: sessionLoading } = useSession(sessionId)
   const { issues, loading: issuesLoading, addIssue, deleteIssue, moveIssue, castVote, revealVotes } =
@@ -19,8 +22,56 @@ export default function SessionDetail() {
   const [adding, setAdding] = useState(false)
   const [issueToDelete, setIssueToDelete] = useState<Issue | null>(null)
   const [deleting, setDeleting] = useState(false)
+  const [showInviteModal, setShowInviteModal] = useState(false)
+  const [inviteLinkCopied, setInviteLinkCopied] = useState(false)
+  const [generatingToken, setGeneratingToken] = useState(false)
 
   const isOwner = user && session && session.creator_uid === user.uid
+  const isMember = user && session ? session.memberIds.includes(user.uid) : false
+
+  // Auto-join when visiting with a valid invite token
+  const joinedRef = useRef(false)
+  const inviteToken = searchParams.get('invite')
+  useEffect(() => {
+    if (!session || !user || !inviteToken || joinedRef.current) return
+    if (session.inviteToken !== inviteToken) return
+    if (session.memberIds.includes(user.uid)) {
+      // Already a member — just clean up the URL
+      setSearchParams({}, { replace: true })
+      return
+    }
+    joinedRef.current = true
+    updateDoc(doc(db, 'sessions', session.id), {
+      memberIds: arrayUnion(user.uid),
+    }).then(() => {
+      setSearchParams({}, { replace: true })
+    })
+  }, [session, user, inviteToken, setSearchParams])
+
+  async function openInviteModal() {
+    setShowInviteModal(true)
+    if (session && !session.inviteToken) {
+      setGeneratingToken(true)
+      try {
+        await updateDoc(doc(db, 'sessions', session.id), {
+          inviteToken: crypto.randomUUID(),
+        })
+      } finally {
+        setGeneratingToken(false)
+      }
+    }
+  }
+
+  const inviteLink = session?.inviteToken
+    ? `${window.location.origin}/sessions/${session.id}?invite=${session.inviteToken}`
+    : null
+
+  async function copyInviteLink() {
+    if (!inviteLink) return
+    await navigator.clipboard.writeText(inviteLink)
+    setInviteLinkCopied(true)
+    setTimeout(() => setInviteLinkCopied(false), 2000)
+  }
 
   async function handleAddIssue() {
     if (!newTitle.trim()) return
@@ -110,25 +161,60 @@ export default function SessionDetail() {
               {session.name}
             </h1>
           </div>
-          {isOwner && (
-            <button
-              onClick={openAddModal}
-              style={{
-                flexShrink: 0,
-                backgroundColor: 'var(--color-primary)',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '0.5rem',
-                padding: '0.5rem 1rem',
-                fontSize: '0.875rem',
-                fontWeight: 500,
-                cursor: 'pointer',
-              }}
-            >
-              + Add issue
-            </button>
-          )}
+          <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
+            {isOwner && (
+              <button
+                onClick={openInviteModal}
+                style={{
+                  backgroundColor: 'transparent',
+                  color: 'var(--color-text-secondary)',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: '0.5rem',
+                  padding: '0.5rem 1rem',
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                }}
+              >
+                Invite
+              </button>
+            )}
+            {isOwner && (
+              <button
+                onClick={openAddModal}
+                style={{
+                  backgroundColor: 'var(--color-primary)',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '0.5rem',
+                  padding: '0.5rem 1rem',
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                }}
+              >
+                + Add issue
+              </button>
+            )}
+          </div>
         </div>
+
+        {/* Non-member notice */}
+        {!isMember && user && !inviteToken && (
+          <div
+            style={{
+              marginBottom: '1.25rem',
+              padding: '0.75rem 1rem',
+              backgroundColor: 'rgba(245, 158, 11, 0.08)',
+              border: '1px solid rgba(245, 158, 11, 0.3)',
+              borderRadius: '0.5rem',
+              fontSize: '0.875rem',
+              color: 'var(--color-warning)',
+            }}
+          >
+            You are viewing this session as a guest and cannot vote. Ask the session owner for an invite link to join.
+          </div>
+        )}
 
         {/* Issue list */}
         {issuesLoading ? (
@@ -168,6 +254,7 @@ export default function SessionDetail() {
                 index={index}
                 total={issues.length}
                 isOwner={!!isOwner}
+                isMember={!!isMember}
                 currentUserId={user?.uid ?? null}
                 onMoveUp={() => moveIssue(issue.id, 'up')}
                 onMoveDown={() => moveIssue(issue.id, 'down')}
@@ -179,6 +266,99 @@ export default function SessionDetail() {
           </div>
         )}
       </div>
+
+      {/* Invite modal */}
+      {showInviteModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Invite teammates"
+          onClick={(e) => { if (e.target === e.currentTarget) setShowInviteModal(false) }}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 50,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: 'var(--color-surface-elevated)',
+              border: '1px solid var(--color-border)',
+              borderRadius: '0.75rem',
+              padding: '1.5rem',
+              width: '100%',
+              maxWidth: '480px',
+            }}
+          >
+            <h2 style={{ margin: '0 0 0.5rem 0', fontSize: '1.125rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+              Invite teammates
+            </h2>
+            <p style={{ margin: '0 0 1rem 0', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
+              Share this link to invite others to vote in this session. Anyone with the link can join.
+            </p>
+            {generatingToken ? (
+              <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>Generating invite link…</p>
+            ) : (
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <input
+                  type="text"
+                  readOnly
+                  value={inviteLink ?? ''}
+                  onClick={(e) => (e.target as HTMLInputElement).select()}
+                  style={{
+                    flex: 1,
+                    padding: '0.625rem 0.75rem',
+                    backgroundColor: 'var(--color-surface)',
+                    border: '1px solid var(--color-border)',
+                    borderRadius: '0.5rem',
+                    color: 'var(--color-text-secondary)',
+                    fontSize: '0.8125rem',
+                    outline: 'none',
+                    minWidth: 0,
+                  }}
+                />
+                <button
+                  onClick={copyInviteLink}
+                  style={{
+                    flexShrink: 0,
+                    padding: '0.625rem 1rem',
+                    border: 'none',
+                    borderRadius: '0.5rem',
+                    backgroundColor: inviteLinkCopied ? 'var(--color-success)' : 'var(--color-primary)',
+                    color: '#fff',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                    transition: 'background-color 0.15s',
+                  }}
+                >
+                  {inviteLinkCopied ? 'Copied!' : 'Copy'}
+                </button>
+              </div>
+            )}
+            <div style={{ marginTop: '1.25rem', display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setShowInviteModal(false)}
+                style={{
+                  padding: '0.5rem 1rem',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: '0.5rem',
+                  backgroundColor: 'transparent',
+                  color: 'var(--color-text-secondary)',
+                  fontSize: '0.875rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add issue modal */}
       {showAddModal && (
@@ -377,6 +557,7 @@ interface IssueRowProps {
   index: number
   total: number
   isOwner: boolean
+  isMember: boolean
   currentUserId: string | null
   onMoveUp: () => void
   onMoveDown: () => void
@@ -385,7 +566,7 @@ interface IssueRowProps {
   onReveal: () => void
 }
 
-function IssueRow({ issue, index, total, isOwner, currentUserId, onMoveUp, onMoveDown, onDelete, onVote, onReveal }: IssueRowProps) {
+function IssueRow({ issue, index, total, isOwner, isMember, currentUserId, onMoveUp, onMoveDown, onDelete, onVote, onReveal }: IssueRowProps) {
   const voters = Object.entries(issue.votes ?? {})
   const myVote = currentUserId ? issue.votes?.[currentUserId]?.value ?? null : null
 
@@ -546,8 +727,8 @@ function IssueRow({ issue, index, total, isOwner, currentUserId, onMoveUp, onMov
           </button>
         )}
 
-        {/* Voting panel — only shown when not yet revealed */}
-        {!issue.revealed && currentUserId && (
+        {/* Voting panel — only shown when not yet revealed and user is a member */}
+        {!issue.revealed && currentUserId && isMember && (
           <div style={{ display: 'flex', gap: '0.375rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
             {POKER_VALUES.map((v) => {
               const selected = myVote === v
