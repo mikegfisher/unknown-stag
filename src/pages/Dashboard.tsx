@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { collection, addDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore'
+import { collection, addDoc, deleteDoc, doc, Timestamp } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { useAuth } from '../hooks/useAuth'
 import { useSessions } from '../hooks/useSessions'
@@ -20,7 +20,7 @@ export default function Dashboard() {
     if (!user || !newSessionName.trim()) return
     setCreating(true)
     try {
-      await addDoc(collection(db, 'sessions'), {
+      const docRef = await addDoc(collection(db, 'sessions'), {
         name: newSessionName.trim(),
         creator_uid: user.uid,
         memberIds: [user.uid],
@@ -28,10 +28,11 @@ export default function Dashboard() {
         openIssues: 0,
         revealedIssues: 0,
         inviteToken: crypto.randomUUID(),
-        createdAt: serverTimestamp(),
+        createdAt: Timestamp.now(),
       })
       setNewSessionName('')
       setShowCreateModal(false)
+      navigate(`/sessions/${docRef.id}`)
     } finally {
       setCreating(false)
     }
