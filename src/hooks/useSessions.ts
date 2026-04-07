@@ -21,17 +21,21 @@ export interface Session {
   createdAt: { toMillis: () => number } | null
 }
 
-export function useSessions(user: User | null) {
+export function useSessions(user: User | null, authLoading = false) {
   const [sessions, setSessions] = useState<Session[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (authLoading) return
+
     if (!user) {
       setSessions([])
       setLoading(false)
       return
     }
+
+    setLoading(true)
 
     const q = query(
       collection(db, 'sessions'),
@@ -57,7 +61,7 @@ export function useSessions(user: User | null) {
     )
 
     return unsubscribe
-  }, [user])
+  }, [user?.uid, authLoading])
 
   return { sessions, loading, error }
 }

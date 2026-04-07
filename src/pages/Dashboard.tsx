@@ -7,8 +7,8 @@ import { useSessions } from '../hooks/useSessions'
 import type { Session } from '../hooks/useSessions'
 
 export default function Dashboard() {
-  const { user, signOut } = useAuth()
-  const { sessions, loading, error } = useSessions(user)
+  const { user, loading: authLoading, signOut } = useAuth()
+  const { sessions, loading, error } = useSessions(user, authLoading)
   const navigate = useNavigate()
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [newSessionName, setNewSessionName] = useState('')
