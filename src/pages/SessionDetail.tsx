@@ -19,6 +19,7 @@ export default function SessionDetail() {
   const [showAddModal, setShowAddModal] = useState(false)
   const [newTitle, setNewTitle] = useState('')
   const [newDescription, setNewDescription] = useState('')
+  const [newExternalUrl, setNewExternalUrl] = useState('')
   const [adding, setAdding] = useState(false)
   const [issueToDelete, setIssueToDelete] = useState<Issue | null>(null)
   const [deleting, setDeleting] = useState(false)
@@ -77,9 +78,10 @@ export default function SessionDetail() {
     if (!newTitle.trim()) return
     setAdding(true)
     try {
-      await addIssue(newTitle, newDescription)
+      await addIssue(newTitle, newDescription, newExternalUrl)
       setNewTitle('')
       setNewDescription('')
+      setNewExternalUrl('')
       setShowAddModal(false)
     } finally {
       setAdding(false)
@@ -100,6 +102,7 @@ export default function SessionDetail() {
   function openAddModal() {
     setNewTitle('')
     setNewDescription('')
+    setNewExternalUrl('')
     setShowAddModal(true)
   }
 
@@ -460,7 +463,7 @@ export default function SessionDetail() {
                 width: '100%',
                 boxSizing: 'border-box',
                 padding: '0.625rem 0.75rem',
-                marginBottom: '1rem',
+                marginBottom: '0.75rem',
                 backgroundColor: 'var(--color-surface)',
                 border: '1px solid var(--color-border)',
                 borderRadius: '0.5rem',
@@ -469,6 +472,25 @@ export default function SessionDetail() {
                 outline: 'none',
                 resize: 'vertical',
                 fontFamily: 'inherit',
+              }}
+            />
+            <input
+              type="url"
+              placeholder="External link (optional)"
+              value={newExternalUrl}
+              onChange={(e) => setNewExternalUrl(e.target.value)}
+              style={{
+                display: 'block',
+                width: '100%',
+                boxSizing: 'border-box',
+                padding: '0.625rem 0.75rem',
+                marginBottom: '1rem',
+                backgroundColor: 'var(--color-surface)',
+                border: '1px solid var(--color-border)',
+                borderRadius: '0.5rem',
+                color: 'var(--color-text-primary)',
+                fontSize: '0.875rem',
+                outline: 'none',
               }}
             />
             <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
@@ -699,6 +721,29 @@ function IssueRow({ issue, index, total, isOwner, isMember, currentUserId, onMov
             {issue.revealed ? 'Revealed' : 'Voting'}
           </span>
         </div>
+        {issue.externalUrl && (
+          <a
+            href={issue.externalUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={issue.externalUrl}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.25rem',
+              fontSize: '0.75rem',
+              color: 'var(--color-primary)',
+              textDecoration: 'none',
+              marginBottom: issue.description ? '0.375rem' : 0,
+            }}
+          >
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M5 2H2a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V7" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M8 1h3m0 0v3m0-3L5.5 6.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            External link
+          </a>
+        )}
         {issue.description && (
           <p
             style={{

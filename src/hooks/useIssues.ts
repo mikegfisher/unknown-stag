@@ -25,6 +25,7 @@ export interface Issue {
   id: string
   title: string
   description?: string
+  externalUrl?: string
   order: number
   revealed: boolean
   votes: Record<string, VoterInfo>
@@ -69,11 +70,11 @@ export function useIssues(sessionId: string | undefined, user: User | null) {
     return unsubscribe
   }, [sessionId, user])
 
-  async function addIssue(title: string, description?: string) {
+  async function addIssue(title: string, description?: string, externalUrl?: string) {
     if (!sessionId || !user) return
     const nextOrder =
       issues.length > 0 ? Math.max(...issues.map((i) => i.order)) + 1 : 0
-    await addDoc(collection(db, 'sessions', sessionId, 'issues'), {
+    const issueData: Record<string, unknown> = {
       title: title.trim(),
       description: description?.trim() ?? '',
       order: nextOrder,
@@ -81,7 +82,11 @@ export function useIssues(sessionId: string | undefined, user: User | null) {
       votes: {},
       creator_uid: user.uid,
       createdAt: serverTimestamp(),
-    })
+    }
+    if (externalUrl?.trim()) {
+      issueData.externalUrl = externalUrl.trim()
+    }
+    await addDoc(collection(db, 'sessions', sessionId, 'issues'), issueData)
     await updateDoc(doc(db, 'sessions', sessionId), {
       openIssues: increment(1),
     })
