@@ -45,23 +45,21 @@ export function ReadinessGuide() {
           width: '2.5rem',
           height: '2.5rem',
           borderRadius: '50%',
-          border: '1px solid var(--color-border-default)',
-          backgroundColor: 'var(--color-bg-elevated)',
-          color: 'var(--color-text-muted)',
+          border: 'none',
+          backgroundColor: 'var(--color-primary)',
+          color: 'white',
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 40,
-          transition: 'border-color 0.15s, color 0.15s',
+          transition: 'background-color 0.15s',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = 'var(--color-border-active)'
-          e.currentTarget.style.color = 'var(--color-text-secondary)'
+          e.currentTarget.style.backgroundColor = 'var(--color-primary-hover)'
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = 'var(--color-border-default)'
-          e.currentTarget.style.color = 'var(--color-text-muted)'
+          e.currentTarget.style.backgroundColor = 'var(--color-primary)'
         }}
       >
         <BookOpenIcon style={{ width: '1.125rem', height: '1.125rem' }} />
