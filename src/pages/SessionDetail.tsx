@@ -15,7 +15,7 @@ export default function SessionDetail() {
   const [searchParams, setSearchParams] = useSearchParams()
   const { user } = useAuth()
   const { session, loading: sessionLoading, error: sessionError } = useSession(sessionId)
-  const { issues, loading: issuesLoading, error: issuesError, addIssue, deleteIssue, moveIssue, castVote, revealVotes } =
+  const { issues, loading: issuesLoading, error: issuesError, addIssue, deleteIssue, moveIssue, castVote, revealVotes, reopenIssue } =
     useIssues(sessionId, user)
 
   const [showAddModal, setShowAddModal] = useState(false)
@@ -25,6 +25,8 @@ export default function SessionDetail() {
   const [adding, setAdding] = useState(false)
   const [issueToDelete, setIssueToDelete] = useState<Issue | null>(null)
   const [deleting, setDeleting] = useState(false)
+  const [issueToReopen, setIssueToReopen] = useState<Issue | null>(null)
+  const [reopening, setReopening] = useState(false)
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [inviteLinkCopied, setInviteLinkCopied] = useState(false)
   const [generatingToken, setGeneratingToken] = useState(false)
@@ -98,6 +100,17 @@ export default function SessionDetail() {
       setIssueToDelete(null)
     } finally {
       setDeleting(false)
+    }
+  }
+
+  async function handleReopenIssue() {
+    if (!issueToReopen) return
+    setReopening(true)
+    try {
+      await reopenIssue(issueToReopen.id)
+      setIssueToReopen(null)
+    } finally {
+      setReopening(false)
     }
   }
 
@@ -305,6 +318,7 @@ export default function SessionDetail() {
                 onDelete={() => setIssueToDelete(issue)}
                 onVote={(value) => castVote(issue.id, value)}
                 onReveal={() => revealVotes(issue.id)}
+                onReopen={() => setIssueToReopen(issue)}
               />
             ))}
             {issues.some(i => i.revealed) && issues.some(i => !i.revealed) && (
@@ -330,6 +344,7 @@ export default function SessionDetail() {
                 onDelete={() => setIssueToDelete(issue)}
                 onVote={(value) => castVote(issue.id, value)}
                 onReveal={() => revealVotes(issue.id)}
+                onReopen={() => setIssueToReopen(issue)}
               />
             ))}
           </div>
@@ -626,6 +641,76 @@ export default function SessionDetail() {
         </div>
       )}
 
+      {/* Reopen issue confirmation modal */}
+      {issueToReopen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Reopen issue"
+          onClick={(e) => { if (e.target === e.currentTarget) setIssueToReopen(null) }}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'var(--color-overlay)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 50,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: 'var(--color-bg-elevated)',
+              border: '1px solid var(--color-border-default)',
+              borderRadius: '0.75rem',
+              padding: '1.5rem',
+              width: '100%',
+              maxWidth: '400px',
+            }}
+          >
+            <h2 style={{ margin: '0 0 0.5rem 0', fontSize: '1.125rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+              Reopen issue?
+            </h2>
+            <p style={{ margin: '0 0 1.25rem 0', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
+              Reopening "{issueToReopen.title}" will clear all existing votes and return it to voting. This cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setIssueToReopen(null)}
+                disabled={reopening}
+                style={{
+                  padding: '0.5rem 1rem',
+                  border: '1px solid var(--color-border-default)',
+                  borderRadius: '0.5rem',
+                  backgroundColor: 'transparent',
+                  color: 'var(--color-text-secondary)',
+                  fontSize: '0.875rem',
+                  cursor: reopening ? 'not-allowed' : 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleReopenIssue}
+                disabled={reopening}
+                style={{
+                  padding: '0.5rem 1rem',
+                  border: 'none',
+                  borderRadius: '0.5rem',
+                  backgroundColor: reopening ? 'var(--color-bg-surface)' : 'var(--color-warning)',
+                  color: reopening ? 'var(--color-text-muted)' : 'var(--color-text-inverse)',
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  cursor: reopening ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {reopening ? 'Reopening…' : 'Reopen'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <ReadinessGuide />
     </div>
   )
@@ -663,9 +748,10 @@ interface IssueRowProps {
   onDelete: () => void
   onVote: (value: string) => void
   onReveal: () => void
+  onReopen: () => void
 }
 
-function IssueRow({ issue, index, total, isOwner, isMember, currentUserId, onMoveUp, onMoveDown, onDelete, onVote, onReveal }: IssueRowProps) {
+function IssueRow({ issue, index, total, isOwner, isMember, currentUserId, onMoveUp, onMoveDown, onDelete, onVote, onReveal, onReopen }: IssueRowProps) {
   const voters = Object.entries(issue.votes ?? {})
   const myVote = currentUserId ? issue.votes?.[currentUserId]?.value ?? null : null
 
@@ -864,6 +950,26 @@ function IssueRow({ issue, index, total, isOwner, isMember, currentUserId, onMov
             }}
           >
             Reveal votes
+          </button>
+        )}
+
+        {/* Reopen button — owner only, already revealed */}
+        {isOwner && issue.revealed && (
+          <button
+            onClick={onReopen}
+            style={{
+              marginTop: '0.75rem',
+              padding: '0.375rem 0.875rem',
+              border: '1px solid var(--color-warning)',
+              borderRadius: '0.5rem',
+              backgroundColor: 'transparent',
+              color: 'var(--color-warning)',
+              fontSize: '0.8125rem',
+              fontWeight: 500,
+              cursor: 'pointer',
+            }}
+          >
+            Reopen
           </button>
         )}
 
