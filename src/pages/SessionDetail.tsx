@@ -6,6 +6,7 @@ import { useAuth } from '../hooks/useAuth'
 import { useSession } from '../hooks/useSession'
 import { useIssues } from '../hooks/useIssues'
 import type { Issue } from '../hooks/useIssues'
+import { roundUpToFibonacci } from '../lib/fibonacci'
 
 export default function SessionDetail() {
   const { sessionId } = useParams<{ sessionId: string }>()
@@ -641,15 +642,6 @@ function getExternalLinkLabel(url: string): string {
 }
 
 const POKER_VALUES = ['1', '2', '3', '5', '8', '13', '21']
-
-const FIBONACCI = [1, 2, 3, 5, 8, 13, 21]
-
-function roundUpToFibonacci(n: number): number {
-  for (const f of FIBONACCI) {
-    if (f >= n) return f
-  }
-  return FIBONACCI[FIBONACCI.length - 1]
-}
 
 interface IssueRowProps {
   issue: Issue
