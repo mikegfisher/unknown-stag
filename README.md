@@ -1,8 +1,3 @@
-| Code Climate | Coverage | Test & Deploy |
-| --- | --- | --- |
-| [![Maintainability](https://api.codeclimate.com/v1/badges/c2249bea7d10ab57b4b6/maintainability)](https://codeclimate.com/github/mikegfisher/unknown-stag/maintainability) | [![test coverage](https://api.codeclimate.com/v1/badges/c2249bea7d10ab57b4b6/test_coverage)](https://codeclimate.com/github/mikegfisher/unknown-stag/test_coverage) | [![buddy pipeline](https://app.buddy.works/mikegfisher/unknown-stag/pipelines/pipeline/125711/badge.svg?token=cfedb8a2703ddaf7ed8698e6bd27444b34eb8cfd76f14bf643cc31af1dbdab1d "buddy pipeline")](https://app.buddy.works/mikegfisher/unknown-stag/pipelines/pipeline/125711) |
-
-
 # Asyncast
 
 Asyncast is a real-time planning poker app for async teams. Collaborators create voting sessions, add issues to estimate, and reveal story points together — no matter where everyone is working from.
