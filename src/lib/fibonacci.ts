@@ -1,4 +1,4 @@
-export const FIBONACCI = [1, 2, 3, 5, 8, 13, 21]
+export const FIBONACCI = [1, 2, 3, 5, 8]
 
 export function roundUpToFibonacci(n: number): number {
   for (const f of FIBONACCI) {
