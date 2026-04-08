@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { BookOpenIcon } from '@heroicons/react/24/outline'
 
-const READINESS_SCALE = [
+export const READINESS_SCALE = [
   {
     value: 1,
     label: 'Fully defined',
@@ -28,6 +28,10 @@ const READINESS_SCALE = [
     description: 'Major open questions, dependencies, or scope issues. Not right-sized.',
   },
 ]
+
+export function getReadinessLabel(value: number): string | undefined {
+  return READINESS_SCALE.find((r) => r.value === value)?.label
+}
 
 export function ReadinessGuide() {
   const [open, setOpen] = useState(false)
