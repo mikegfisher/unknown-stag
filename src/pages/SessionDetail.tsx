@@ -631,9 +631,14 @@ export default function SessionDetail() {
   )
 }
 
+function normalizeUrl(url: string): string {
+  if (url.startsWith('http://') || url.startsWith('https://')) return url
+  return `https://${url}`
+}
+
 function getExternalLinkLabel(url: string): string {
   try {
-    const hostname = new URL(url).hostname
+    const hostname = new URL(normalizeUrl(url)).hostname
     if (hostname.includes('atlassian.net')) return 'Jira'
     if (hostname.includes('github.com')) return 'GitHub'
     if (hostname.includes('linear.app')) return 'Linear'
@@ -757,7 +762,7 @@ function IssueRow({ issue, index, total, isOwner, isMember, currentUserId, onMov
         </div>
         {issue.externalUrl && (
           <a
-            href={issue.externalUrl}
+            href={normalizeUrl(issue.externalUrl)}
             target="_blank"
             rel="noopener noreferrer"
             title={issue.externalUrl}
