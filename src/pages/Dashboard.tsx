@@ -64,7 +64,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-background)', padding: '2rem' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-bg-page)', padding: '2rem' }}>
       <div style={{ maxWidth: '860px', margin: '0 auto' }}>
 
         {/* Header */}
@@ -93,7 +93,7 @@ export default function Dashboard() {
               style={{
                 backgroundColor: 'transparent',
                 color: 'var(--color-text-secondary)',
-                border: '1px solid var(--color-border)',
+                border: '1px solid var(--color-border-default)',
                 borderRadius: '0.5rem',
                 padding: '0.5rem 1rem',
                 fontSize: '0.875rem',
@@ -126,7 +126,7 @@ export default function Dashboard() {
             style={{
               textAlign: 'center',
               padding: '4rem 2rem',
-              border: '1px dashed var(--color-border)',
+              border: '1px dashed var(--color-border-default)',
               borderRadius: '0.75rem',
               color: 'var(--color-text-muted)',
             }}
@@ -158,8 +158,8 @@ export default function Dashboard() {
                 key={session.id}
                 onClick={() => navigate(`/sessions/${session.id}`)}
                 style={{
-                  backgroundColor: 'var(--color-surface)',
-                  border: '1px solid var(--color-border)',
+                  backgroundColor: 'var(--color-bg-surface)',
+                  border: '1px solid var(--color-border-default)',
                   borderRadius: '0.75rem',
                   padding: '1.25rem',
                   cursor: 'pointer',
@@ -241,8 +241,8 @@ export default function Dashboard() {
         >
           <div
             style={{
-              backgroundColor: 'var(--color-surface-elevated)',
-              border: '1px solid var(--color-border)',
+              backgroundColor: 'var(--color-bg-elevated)',
+              border: '1px solid var(--color-border-default)',
               borderRadius: '0.75rem',
               padding: '1.5rem',
               width: '100%',
@@ -265,8 +265,8 @@ export default function Dashboard() {
                 boxSizing: 'border-box',
                 padding: '0.625rem 0.75rem',
                 marginBottom: '1rem',
-                backgroundColor: 'var(--color-surface)',
-                border: '1px solid var(--color-border)',
+                backgroundColor: 'var(--color-bg-surface)',
+                border: '1px solid var(--color-border-default)',
                 borderRadius: '0.5rem',
                 color: 'var(--color-text-primary)',
                 fontSize: '0.875rem',
@@ -278,7 +278,7 @@ export default function Dashboard() {
                 onClick={closeCreateModal}
                 style={{
                   padding: '0.5rem 1rem',
-                  border: '1px solid var(--color-border)',
+                  border: '1px solid var(--color-border-default)',
                   borderRadius: '0.5rem',
                   backgroundColor: 'transparent',
                   color: 'var(--color-text-secondary)',
@@ -295,7 +295,7 @@ export default function Dashboard() {
                   padding: '0.5rem 1rem',
                   border: 'none',
                   borderRadius: '0.5rem',
-                  backgroundColor: !newSessionName.trim() || creating ? 'var(--color-surface)' : 'var(--color-primary)',
+                  backgroundColor: !newSessionName.trim() || creating ? 'var(--color-bg-surface)' : 'var(--color-primary)',
                   color: !newSessionName.trim() || creating ? 'var(--color-text-muted)' : 'var(--color-text-inverse)',
                   fontSize: '0.875rem',
                   fontWeight: 500,
@@ -328,8 +328,8 @@ export default function Dashboard() {
         >
           <div
             style={{
-              backgroundColor: 'var(--color-surface-elevated)',
-              border: '1px solid var(--color-border)',
+              backgroundColor: 'var(--color-bg-elevated)',
+              border: '1px solid var(--color-border-default)',
               borderRadius: '0.75rem',
               padding: '1.5rem',
               width: '100%',
@@ -348,7 +348,7 @@ export default function Dashboard() {
                 disabled={deleting}
                 style={{
                   padding: '0.5rem 1rem',
-                  border: '1px solid var(--color-border)',
+                  border: '1px solid var(--color-border-default)',
                   borderRadius: '0.5rem',
                   backgroundColor: 'transparent',
                   color: 'var(--color-text-secondary)',
@@ -365,7 +365,7 @@ export default function Dashboard() {
                   padding: '0.5rem 1rem',
                   border: 'none',
                   borderRadius: '0.5rem',
-                  backgroundColor: deleting ? 'var(--color-surface)' : 'var(--color-error)',
+                  backgroundColor: deleting ? 'var(--color-bg-surface)' : 'var(--color-error)',
                   color: deleting ? 'var(--color-text-muted)' : 'var(--color-text-inverse)',
                   fontSize: '0.875rem',
                   fontWeight: 500,

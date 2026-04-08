@@ -30,13 +30,13 @@ export default function LoginPage() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--color-background)' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--color-bg-page)' }}>
         <div
           style={{
             width: '2rem',
             height: '2rem',
             borderRadius: '50%',
-            border: '3px solid var(--color-border)',
+            border: '3px solid var(--color-border-default)',
             borderTopColor: 'var(--color-primary)',
             animation: 'spin 0.75s linear infinite',
           }}
@@ -47,11 +47,11 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--color-background)' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--color-bg-page)' }}>
       <div
         style={{
-          backgroundColor: 'var(--color-surface-elevated)',
-          border: '1px solid var(--color-border)',
+          backgroundColor: 'var(--color-bg-elevated)',
+          border: '1px solid var(--color-border-default)',
           padding: '2rem',
           borderRadius: '1rem',
           width: '100%',
@@ -92,13 +92,13 @@ export default function LoginPage() {
             alignItems: 'center',
             justifyContent: 'center',
             gap: '0.75rem',
-            border: '1px solid var(--color-border)',
+            border: '1px solid var(--color-border-default)',
             borderRadius: '0.5rem',
             padding: '0.625rem 1rem',
             fontSize: '0.9375rem',
             fontWeight: 500,
             color: signingIn ? 'var(--color-text-muted)' : 'var(--color-text-primary)',
-            backgroundColor: signingIn ? 'var(--color-surface)' : 'var(--color-surface-elevated)',
+            backgroundColor: signingIn ? 'var(--color-bg-surface)' : 'var(--color-bg-elevated)',
             cursor: signingIn ? 'not-allowed' : 'pointer',
             transition: 'background-color 0.15s',
           }}

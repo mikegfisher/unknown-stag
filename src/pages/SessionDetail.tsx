@@ -108,7 +108,7 @@ export default function SessionDetail() {
 
   if (sessionLoading) {
     return (
-      <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-background)', padding: '2rem' }}>
+      <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-bg-page)', padding: '2rem' }}>
         <p style={{ color: 'var(--color-text-secondary)' }}>Loading…</p>
       </div>
     )
@@ -116,7 +116,7 @@ export default function SessionDetail() {
 
   if (sessionError) {
     return (
-      <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-background)', padding: '2rem' }}>
+      <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-bg-page)', padding: '2rem' }}>
         <div
           style={{
             padding: '0.875rem 1rem',
@@ -142,7 +142,7 @@ export default function SessionDetail() {
 
   if (!session) {
     return (
-      <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-background)', padding: '2rem' }}>
+      <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-bg-page)', padding: '2rem' }}>
         <p style={{ color: 'var(--color-text-secondary)', marginBottom: '0.75rem' }}>Session not found.</p>
         <button
           onClick={() => navigate('/dashboard')}
@@ -155,7 +155,7 @@ export default function SessionDetail() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-background)', padding: '2rem' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-bg-page)', padding: '2rem' }}>
       <div style={{ maxWidth: '720px', margin: '0 auto' }}>
 
         {/* Header */}
@@ -197,7 +197,7 @@ export default function SessionDetail() {
                 style={{
                   backgroundColor: 'transparent',
                   color: 'var(--color-text-secondary)',
-                  border: '1px solid var(--color-border)',
+                  border: '1px solid var(--color-border-default)',
                   borderRadius: '0.5rem',
                   padding: '0.5rem 1rem',
                   fontSize: '0.875rem',
@@ -266,7 +266,7 @@ export default function SessionDetail() {
             style={{
               textAlign: 'center',
               padding: '4rem 2rem',
-              border: '1px dashed var(--color-border)',
+              border: '1px dashed var(--color-border-default)',
               borderRadius: '0.75rem',
               color: 'var(--color-text-muted)',
             }}
@@ -328,8 +328,8 @@ export default function SessionDetail() {
         >
           <div
             style={{
-              backgroundColor: 'var(--color-surface-elevated)',
-              border: '1px solid var(--color-border)',
+              backgroundColor: 'var(--color-bg-elevated)',
+              border: '1px solid var(--color-border-default)',
               borderRadius: '0.75rem',
               padding: '1.5rem',
               width: '100%',
@@ -354,8 +354,8 @@ export default function SessionDetail() {
                   style={{
                     flex: 1,
                     padding: '0.625rem 0.75rem',
-                    backgroundColor: 'var(--color-surface)',
-                    border: '1px solid var(--color-border)',
+                    backgroundColor: 'var(--color-bg-surface)',
+                    border: '1px solid var(--color-border-default)',
                     borderRadius: '0.5rem',
                     color: 'var(--color-text-secondary)',
                     fontSize: '0.8125rem',
@@ -387,7 +387,7 @@ export default function SessionDetail() {
                 onClick={() => setShowInviteModal(false)}
                 style={{
                   padding: '0.5rem 1rem',
-                  border: '1px solid var(--color-border)',
+                  border: '1px solid var(--color-border-default)',
                   borderRadius: '0.5rem',
                   backgroundColor: 'transparent',
                   color: 'var(--color-text-secondary)',
@@ -421,8 +421,8 @@ export default function SessionDetail() {
         >
           <div
             style={{
-              backgroundColor: 'var(--color-surface-elevated)',
-              border: '1px solid var(--color-border)',
+              backgroundColor: 'var(--color-bg-elevated)',
+              border: '1px solid var(--color-border-default)',
               borderRadius: '0.75rem',
               padding: '1.5rem',
               width: '100%',
@@ -445,8 +445,8 @@ export default function SessionDetail() {
                 boxSizing: 'border-box',
                 padding: '0.625rem 0.75rem',
                 marginBottom: '0.75rem',
-                backgroundColor: 'var(--color-surface)',
-                border: '1px solid var(--color-border)',
+                backgroundColor: 'var(--color-bg-surface)',
+                border: '1px solid var(--color-border-default)',
                 borderRadius: '0.5rem',
                 color: 'var(--color-text-primary)',
                 fontSize: '0.875rem',
@@ -464,8 +464,8 @@ export default function SessionDetail() {
                 boxSizing: 'border-box',
                 padding: '0.625rem 0.75rem',
                 marginBottom: '0.75rem',
-                backgroundColor: 'var(--color-surface)',
-                border: '1px solid var(--color-border)',
+                backgroundColor: 'var(--color-bg-surface)',
+                border: '1px solid var(--color-border-default)',
                 borderRadius: '0.5rem',
                 color: 'var(--color-text-primary)',
                 fontSize: '0.875rem',
@@ -483,8 +483,8 @@ export default function SessionDetail() {
                 boxSizing: 'border-box',
                 padding: '0.625rem 0.75rem',
                 marginBottom: '1rem',
-                backgroundColor: 'var(--color-surface)',
-                border: '1px solid var(--color-border)',
+                backgroundColor: 'var(--color-bg-surface)',
+                border: '1px solid var(--color-border-default)',
                 borderRadius: '0.5rem',
                 color: 'var(--color-text-primary)',
                 fontSize: '0.875rem',
@@ -498,7 +498,7 @@ export default function SessionDetail() {
                 onClick={() => setShowAddModal(false)}
                 style={{
                   padding: '0.5rem 1rem',
-                  border: '1px solid var(--color-border)',
+                  border: '1px solid var(--color-border-default)',
                   borderRadius: '0.5rem',
                   backgroundColor: 'transparent',
                   color: 'var(--color-text-secondary)',
@@ -515,7 +515,7 @@ export default function SessionDetail() {
                   padding: '0.5rem 1rem',
                   border: 'none',
                   borderRadius: '0.5rem',
-                  backgroundColor: !newTitle.trim() || adding ? 'var(--color-surface)' : 'var(--color-primary)',
+                  backgroundColor: !newTitle.trim() || adding ? 'var(--color-bg-surface)' : 'var(--color-primary)',
                   color: !newTitle.trim() || adding ? 'var(--color-text-muted)' : 'var(--color-text-inverse)',
                   fontSize: '0.875rem',
                   fontWeight: 500,
@@ -548,8 +548,8 @@ export default function SessionDetail() {
         >
           <div
             style={{
-              backgroundColor: 'var(--color-surface-elevated)',
-              border: '1px solid var(--color-border)',
+              backgroundColor: 'var(--color-bg-elevated)',
+              border: '1px solid var(--color-border-default)',
               borderRadius: '0.75rem',
               padding: '1.5rem',
               width: '100%',
@@ -568,7 +568,7 @@ export default function SessionDetail() {
                 disabled={deleting}
                 style={{
                   padding: '0.5rem 1rem',
-                  border: '1px solid var(--color-border)',
+                  border: '1px solid var(--color-border-default)',
                   borderRadius: '0.5rem',
                   backgroundColor: 'transparent',
                   color: 'var(--color-text-secondary)',
@@ -585,7 +585,7 @@ export default function SessionDetail() {
                   padding: '0.5rem 1rem',
                   border: 'none',
                   borderRadius: '0.5rem',
-                  backgroundColor: deleting ? 'var(--color-surface)' : 'var(--color-error)',
+                  backgroundColor: deleting ? 'var(--color-bg-surface)' : 'var(--color-error)',
                   color: deleting ? 'var(--color-text-muted)' : 'var(--color-text-inverse)',
                   fontSize: '0.875rem',
                   fontWeight: 500,
@@ -657,8 +657,8 @@ function IssueRow({ issue, index, total, isOwner, isMember, currentUserId, onMov
   return (
     <div
       style={{
-        backgroundColor: issue.revealed ? 'var(--color-success-surface)' : 'var(--color-surface)',
-        border: issue.revealed ? '1px solid var(--color-success-border)' : '1px solid var(--color-border)',
+        backgroundColor: issue.revealed ? 'var(--color-success-surface)' : 'var(--color-bg-surface)',
+        border: issue.revealed ? '1px solid var(--color-success-border)' : '1px solid var(--color-border-default)',
         borderRadius: '0.75rem',
         padding: '1rem 1.25rem',
         display: 'flex',
@@ -676,7 +676,7 @@ function IssueRow({ issue, index, total, isOwner, isMember, currentUserId, onMov
             style={{
               background: 'none',
               border: 'none',
-              color: index === 0 ? 'var(--color-border)' : 'var(--color-text-muted)',
+              color: index === 0 ? 'var(--color-border-default)' : 'var(--color-text-muted)',
               cursor: index === 0 ? 'default' : 'pointer',
               padding: '0.125rem 0.25rem',
               fontSize: '0.75rem',
@@ -693,7 +693,7 @@ function IssueRow({ issue, index, total, isOwner, isMember, currentUserId, onMov
             style={{
               background: 'none',
               border: 'none',
-              color: index === total - 1 ? 'var(--color-border)' : 'var(--color-text-muted)',
+              color: index === total - 1 ? 'var(--color-border-default)' : 'var(--color-text-muted)',
               cursor: index === total - 1 ? 'default' : 'pointer',
               padding: '0.125rem 0.25rem',
               fontSize: '0.75rem',
@@ -839,11 +839,11 @@ function IssueRow({ issue, index, total, isOwner, isMember, currentUserId, onMov
                     height: '3rem',
                     border: selected
                       ? '2px solid var(--color-primary)'
-                      : '1px solid var(--color-border)',
+                      : '1px solid var(--color-border-default)',
                     borderRadius: '0.375rem',
                     backgroundColor: selected
                       ? 'var(--color-primary)'
-                      : 'var(--color-surface-elevated)',
+                      : 'var(--color-bg-elevated)',
                     color: selected ? 'var(--color-text-inverse)' : 'var(--color-text-secondary)',
                     fontSize: '0.875rem',
                     fontWeight: selected ? 700 : 400,
@@ -899,7 +899,7 @@ function VoterAvatar({ displayName, photoURL, value }: { displayName: string | n
         width: '24px',
         height: '24px',
         borderRadius: '50%',
-        border: '1px solid var(--color-border)',
+        border: '1px solid var(--color-border-default)',
         objectFit: 'cover',
         flexShrink: 0,
       }}
