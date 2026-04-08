@@ -12,13 +12,13 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--color-background)' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--color-bg-page)' }}>
         <div
           style={{
             width: '2rem',
             height: '2rem',
             borderRadius: '50%',
-            border: '3px solid var(--color-border)',
+            border: '3px solid var(--color-border-default)',
             borderTopColor: 'var(--color-primary)',
             animation: 'spin 0.75s linear infinite',
           }}
