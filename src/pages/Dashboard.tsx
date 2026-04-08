@@ -70,7 +70,7 @@ export default function Dashboard() {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
           <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
-            Sessions
+            Point-Poker Backlogs
           </h1>
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
             <button
@@ -86,7 +86,7 @@ export default function Dashboard() {
                 cursor: 'pointer',
               }}
             >
-              + Create session
+              + Create backlog
             </button>
             <button
               onClick={signOut}
@@ -107,7 +107,7 @@ export default function Dashboard() {
 
         {/* Session list */}
         {loading ? (
-          <p style={{ color: 'var(--color-text-secondary)' }}>Loading sessions…</p>
+          <p style={{ color: 'var(--color-text-secondary)' }}>Loading backlogs…</p>
         ) : error ? (
           <div
             style={{
@@ -131,7 +131,7 @@ export default function Dashboard() {
               color: 'var(--color-text-muted)',
             }}
           >
-            <p style={{ marginBottom: '0.75rem' }}>No sessions yet.</p>
+            <p style={{ marginBottom: '0.75rem' }}>No backlogs yet.</p>
             <button
               onClick={openCreateModal}
               style={{
@@ -142,7 +142,7 @@ export default function Dashboard() {
                 cursor: 'pointer',
               }}
             >
-              Create your first session →
+              Create your first backlog →
             </button>
           </div>
         ) : (
@@ -184,7 +184,7 @@ export default function Dashboard() {
                   {user && session.creator_uid === user.uid && (
                     <button
                       onClick={(e) => { e.stopPropagation(); setSessionToDelete(session) }}
-                      title="Delete session"
+                      title="Delete backlog"
                       style={{
                         marginLeft: '0.5rem',
                         flexShrink: 0,
@@ -227,7 +227,7 @@ export default function Dashboard() {
         <div
           role="dialog"
           aria-modal="true"
-          aria-label="Create session"
+          aria-label="Create backlog"
           onClick={(e) => { if (e.target === e.currentTarget) closeCreateModal() }}
           style={{
             position: 'fixed',
@@ -250,11 +250,11 @@ export default function Dashboard() {
             }}
           >
             <h2 style={{ margin: '0 0 1rem 0', fontSize: '1.125rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
-              Create session
+              Create backlog
             </h2>
             <input
               type="text"
-              placeholder="Session name"
+              placeholder="Backlog name"
               value={newSessionName}
               onChange={(e) => setNewSessionName(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') createSession() }}
@@ -314,7 +314,7 @@ export default function Dashboard() {
         <div
           role="dialog"
           aria-modal="true"
-          aria-label="Delete session"
+          aria-label="Delete backlog"
           onClick={(e) => { if (e.target === e.currentTarget) closeDeleteModal() }}
           style={{
             position: 'fixed',
@@ -337,7 +337,7 @@ export default function Dashboard() {
             }}
           >
             <h2 style={{ margin: '0 0 0.5rem 0', fontSize: '1.125rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
-              Delete session?
+              Delete backlog?
             </h2>
             <p style={{ margin: '0 0 1.25rem 0', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
               "{sessionToDelete.name}" will be permanently deleted. This cannot be undone.

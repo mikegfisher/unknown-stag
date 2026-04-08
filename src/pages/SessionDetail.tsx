@@ -241,7 +241,7 @@ export default function SessionDetail() {
               color: 'var(--color-warning)',
             }}
           >
-            You are viewing this session as a guest and cannot vote. Ask the session owner for an invite link to join.
+            You are viewing this backlog as a guest and cannot vote. Ask the backlog owner for an invite link to join.
           </div>
         )}
 
@@ -289,12 +289,37 @@ export default function SessionDetail() {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            {issues.map((issue, index) => (
+            {issues.filter(i => !i.revealed).map((issue, index) => (
               <IssueRow
                 key={issue.id}
                 issue={issue}
                 index={index}
-                total={issues.length}
+                total={issues.filter(i => !i.revealed).length}
+                isOwner={!!isOwner}
+                isMember={!!isMember}
+                currentUserId={user?.uid ?? null}
+                onMoveUp={() => moveIssue(issue.id, 'up')}
+                onMoveDown={() => moveIssue(issue.id, 'down')}
+                onDelete={() => setIssueToDelete(issue)}
+                onVote={(value) => castVote(issue.id, value)}
+                onReveal={() => revealVotes(issue.id)}
+              />
+            ))}
+            {issues.some(i => i.revealed) && issues.some(i => !i.revealed) && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.25rem 0' }}>
+                <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--color-border-default)' }} />
+                <span style={{ fontSize: '0.6875rem', fontWeight: 600, color: 'var(--color-text-muted)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                  Revealed
+                </span>
+                <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--color-border-default)' }} />
+              </div>
+            )}
+            {issues.filter(i => i.revealed).map((issue, index) => (
+              <IssueRow
+                key={issue.id}
+                issue={issue}
+                index={index}
+                total={issues.filter(i => i.revealed).length}
                 isOwner={!!isOwner}
                 isMember={!!isMember}
                 currentUserId={user?.uid ?? null}
@@ -340,7 +365,7 @@ export default function SessionDetail() {
               Invite teammates
             </h2>
             <p style={{ margin: '0 0 1rem 0', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
-              Share this link to invite others to vote in this session. Anyone with the link can join.
+              Share this link to invite others to vote in this backlog. Anyone with the link can join.
             </p>
             {generatingToken ? (
               <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>Generating invite link…</p>
@@ -664,10 +689,11 @@ function IssueRow({ issue, index, total, isOwner, isMember, currentUserId, onMov
         display: 'flex',
         alignItems: 'flex-start',
         gap: '0.75rem',
+        opacity: issue.revealed ? 0.65 : 1,
       }}
     >
       {/* Reorder buttons */}
-      {isOwner && (
+      {isOwner && !issue.revealed && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.125rem', flexShrink: 0, paddingTop: '0.125rem' }}>
           <button
             onClick={onMoveUp}
