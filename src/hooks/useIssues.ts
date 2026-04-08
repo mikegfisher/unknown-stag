@@ -143,5 +143,17 @@ export function useIssues(sessionId: string | undefined, user: User | null) {
     })
   }
 
-  return { issues, loading, error, addIssue, deleteIssue, moveIssue, castVote, revealVotes }
+  async function reopenIssue(issueId: string) {
+    if (!sessionId) return
+    await updateDoc(doc(db, 'sessions', sessionId, 'issues', issueId), {
+      revealed: false,
+      votes: {},
+    })
+    await updateDoc(doc(db, 'sessions', sessionId), {
+      openIssues: increment(1),
+      revealedIssues: increment(-1),
+    })
+  }
+
+  return { issues, loading, error, addIssue, deleteIssue, moveIssue, castVote, revealVotes, reopenIssue }
 }
