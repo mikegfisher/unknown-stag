@@ -7,6 +7,7 @@ import { useSession } from '../hooks/useSession'
 import { useIssues } from '../hooks/useIssues'
 import type { Issue } from '../hooks/useIssues'
 import { roundUpToFibonacci } from '../lib/fibonacci'
+import { ReadinessGuide } from '../components/ReadinessGuide'
 
 export default function SessionDetail() {
   const { sessionId } = useParams<{ sessionId: string }>()
@@ -624,6 +625,8 @@ export default function SessionDetail() {
           </div>
         </div>
       )}
+
+      <ReadinessGuide />
     </div>
   )
 }
@@ -641,7 +644,7 @@ function getExternalLinkLabel(url: string): string {
   }
 }
 
-const POKER_VALUES = ['1', '2', '3', '5', '8', '13', '21']
+const POKER_VALUES = ['1', '2', '3', '5', '8']
 
 interface IssueRowProps {
   issue: Issue

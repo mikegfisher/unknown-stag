@@ -8,8 +8,6 @@ describe('roundUpToFibonacci', () => {
     expect(roundUpToFibonacci(3)).toBe(3)
     expect(roundUpToFibonacci(5)).toBe(5)
     expect(roundUpToFibonacci(8)).toBe(8)
-    expect(roundUpToFibonacci(13)).toBe(13)
-    expect(roundUpToFibonacci(21)).toBe(21)
   })
 
   it('rounds up to the nearest Fibonacci number for the examples in issue #139', () => {
@@ -23,9 +21,10 @@ describe('roundUpToFibonacci', () => {
     expect(roundUpToFibonacci(6.0)).toBe(8)
   })
 
-  it('caps at 21 for averages above 21', () => {
-    expect(roundUpToFibonacci(21.1)).toBe(21)
-    expect(roundUpToFibonacci(22)).toBe(21)
-    expect(roundUpToFibonacci(100)).toBe(21)
+  it('caps at 8 for averages above 8', () => {
+    expect(roundUpToFibonacci(8.1)).toBe(8)
+    expect(roundUpToFibonacci(13)).toBe(8)
+    expect(roundUpToFibonacci(21)).toBe(8)
+    expect(roundUpToFibonacci(100)).toBe(8)
   })
 })
