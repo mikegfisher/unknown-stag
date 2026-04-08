@@ -15,7 +15,7 @@ export default function SessionDetail() {
   const [searchParams, setSearchParams] = useSearchParams()
   const { user } = useAuth()
   const { session, loading: sessionLoading, error: sessionError } = useSession(sessionId)
-  const { issues, loading: issuesLoading, error: issuesError, addIssue, deleteIssue, moveIssue, castVote, revealVotes, reopenIssue } =
+  const { issues, loading: issuesLoading, error: issuesError, addIssue, deleteIssue, castVote, revealVotes, reopenIssue } =
     useIssues(sessionId, user)
 
   const [showAddModal, setShowAddModal] = useState(false)
@@ -304,17 +304,13 @@ export default function SessionDetail() {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            {issues.filter(i => !i.revealed).map((issue, index) => (
+            {issues.filter(i => !i.revealed).map((issue) => (
               <IssueRow
                 key={issue.id}
                 issue={issue}
-                index={index}
-                total={issues.filter(i => !i.revealed).length}
                 isOwner={!!isOwner}
                 isMember={!!isMember}
                 currentUserId={user?.uid ?? null}
-                onMoveUp={() => moveIssue(issue.id, 'up')}
-                onMoveDown={() => moveIssue(issue.id, 'down')}
                 onDelete={() => setIssueToDelete(issue)}
                 onVote={(value) => castVote(issue.id, value)}
                 onReveal={() => revealVotes(issue.id)}
@@ -330,17 +326,13 @@ export default function SessionDetail() {
                 <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--color-border-default)' }} />
               </div>
             )}
-            {issues.filter(i => i.revealed).map((issue, index) => (
+            {issues.filter(i => i.revealed).map((issue) => (
               <IssueRow
                 key={issue.id}
                 issue={issue}
-                index={index}
-                total={issues.filter(i => i.revealed).length}
                 isOwner={!!isOwner}
                 isMember={!!isMember}
                 currentUserId={user?.uid ?? null}
-                onMoveUp={() => moveIssue(issue.id, 'up')}
-                onMoveDown={() => moveIssue(issue.id, 'down')}
                 onDelete={() => setIssueToDelete(issue)}
                 onVote={(value) => castVote(issue.id, value)}
                 onReveal={() => revealVotes(issue.id)}
@@ -738,20 +730,16 @@ const POKER_VALUES = ['1', '2', '3', '5', '8']
 
 interface IssueRowProps {
   issue: Issue
-  index: number
-  total: number
   isOwner: boolean
   isMember: boolean
   currentUserId: string | null
-  onMoveUp: () => void
-  onMoveDown: () => void
   onDelete: () => void
   onVote: (value: string) => void
   onReveal: () => void
   onReopen: () => void
 }
 
-function IssueRow({ issue, index, total, isOwner, isMember, currentUserId, onMoveUp, onMoveDown, onDelete, onVote, onReveal, onReopen }: IssueRowProps) {
+function IssueRow({ issue, isOwner, isMember, currentUserId, onDelete, onVote, onReveal, onReopen }: IssueRowProps) {
   const voters = Object.entries(issue.votes ?? {})
   const myVote = currentUserId ? issue.votes?.[currentUserId]?.value ?? null : null
 
@@ -765,185 +753,291 @@ function IssueRow({ issue, index, total, isOwner, isMember, currentUserId, onMov
     return roundUpToFibonacci(avg)
   })()
 
+  const externalLinkEl = issue.externalUrl ? (
+    <a
+      href={normalizeUrl(issue.externalUrl)}
+      target="_blank"
+      rel="noopener noreferrer"
+      title={issue.externalUrl}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '0.25rem',
+        fontSize: '0.75rem',
+        color: 'var(--color-primary)',
+        textDecoration: 'none',
+        marginBottom: '0.375rem',
+      }}
+    >
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M5 2H2a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V7" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M8 1h3m0 0v3m0-3L5.5 6.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+      {getExternalLinkLabel(issue.externalUrl)}
+    </a>
+  ) : null
+
+  const deleteButtonEl = isOwner ? (
+    <button
+      onClick={onDelete}
+      title="Delete issue"
+      style={{
+        flexShrink: 0,
+        background: 'none',
+        border: 'none',
+        color: 'var(--color-text-muted)',
+        cursor: 'pointer',
+        padding: '0.125rem 0.25rem',
+        fontSize: '0.875rem',
+        borderRadius: '0.25rem',
+        lineHeight: 1,
+      }}
+    >
+      ✕
+    </button>
+  ) : null
+
+  if (issue.revealed) {
+    return (
+      <div
+        style={{
+          backgroundColor: 'var(--color-bg-page)',
+          border: '1px solid var(--color-bg-elevated)',
+          borderRadius: '0.75rem',
+          padding: '1rem 1.25rem',
+        }}
+      >
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', flex: 1, minWidth: 0 }}>
+            <span style={{ fontSize: '0.9375rem', fontWeight: 500, color: 'var(--color-text-secondary)' }}>
+              {issue.title}
+            </span>
+            <span
+              style={{
+                fontSize: '0.6875rem',
+                fontWeight: 600,
+                padding: '0.125rem 0.5rem',
+                borderRadius: '9999px',
+                backgroundColor: 'var(--color-success-badge-bg)',
+                color: 'var(--color-success)',
+                letterSpacing: '0.03em',
+                textTransform: 'uppercase',
+              }}
+            >
+              Revealed
+            </span>
+          </div>
+          {deleteButtonEl}
+        </div>
+
+        {externalLinkEl}
+
+        {issue.description && (
+          <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.8125rem', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
+            {issue.description}
+          </p>
+        )}
+
+        {/* Voter list */}
+        {voters.length > 0 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.25rem' }}>
+            {voters.map(([uid, voter]) => (
+              <div key={uid} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <VoterAvatar displayName={voter.displayName} photoURL={voter.photoURL} value={null} />
+                  <span style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
+                    {voter.displayName ?? 'Voter'}
+                  </span>
+                </div>
+                <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                  {voter.value}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Divider + Average/Reopen row */}
+        <div style={{ height: '1px', backgroundColor: 'var(--color-border-default)', margin: '0.75rem 0' }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          {fibAverage !== null && (
+            <>
+              <span style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)', flexShrink: 0 }}>Average</span>
+              <span
+                style={{
+                  fontSize: '0.875rem',
+                  fontWeight: 700,
+                  color: 'var(--color-success)',
+                  backgroundColor: 'var(--color-success-chip-bg)',
+                  border: '1px solid var(--color-success-chip-border)',
+                  borderRadius: '0.375rem',
+                  padding: '0.125rem 0.5rem',
+                  lineHeight: 1.5,
+                  flexShrink: 0,
+                }}
+              >
+                {fibAverage}
+              </span>
+              {getReadinessLabel(fibAverage) && (
+                <span
+                  style={{
+                    borderLeft: '2px solid var(--color-primary)',
+                    paddingLeft: '0.5rem',
+                    fontSize: '0.75rem',
+                    color: 'var(--color-text-secondary)',
+                    lineHeight: 1.4,
+                    flex: 1,
+                  }}
+                >
+                  {getReadinessLabel(fibAverage)}
+                </span>
+              )}
+            </>
+          )}
+          {isOwner && (
+            <button
+              onClick={onReopen}
+              style={{
+                marginLeft: 'auto',
+                padding: '0.375rem 0.875rem',
+                border: '1px solid var(--color-primary)',
+                borderRadius: '0.5rem',
+                backgroundColor: 'transparent',
+                color: 'var(--color-primary)',
+                fontSize: '0.8125rem',
+                fontWeight: 500,
+                cursor: 'pointer',
+                flexShrink: 0,
+              }}
+            >
+              Reopen
+            </button>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // VOTING CARD
   return (
     <div
       style={{
-        backgroundColor: issue.revealed ? 'var(--color-success-surface)' : 'var(--color-bg-surface)',
-        border: issue.revealed ? '1px solid var(--color-success-border)' : '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-bg-surface)',
+        border: '1px solid var(--color-border-default)',
         borderRadius: '0.75rem',
         padding: '1rem 1.25rem',
-        display: 'flex',
-        alignItems: 'flex-start',
-        gap: '0.75rem',
-        opacity: issue.revealed ? 0.65 : 1,
       }}
     >
-      {/* Reorder buttons */}
-      {isOwner && !issue.revealed && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.125rem', flexShrink: 0, paddingTop: '0.125rem' }}>
-          <button
-            onClick={onMoveUp}
-            disabled={index === 0}
-            title="Move up"
-            style={{
-              background: 'none',
-              border: 'none',
-              color: index === 0 ? 'var(--color-border-default)' : 'var(--color-text-muted)',
-              cursor: index === 0 ? 'default' : 'pointer',
-              padding: '0.125rem 0.25rem',
-              fontSize: '0.75rem',
-              lineHeight: 1,
-              borderRadius: '0.25rem',
-            }}
-          >
-            ▲
-          </button>
-          <button
-            onClick={onMoveDown}
-            disabled={index === total - 1}
-            title="Move down"
-            style={{
-              background: 'none',
-              border: 'none',
-              color: index === total - 1 ? 'var(--color-border-default)' : 'var(--color-text-muted)',
-              cursor: index === total - 1 ? 'default' : 'pointer',
-              padding: '0.125rem 0.25rem',
-              fontSize: '0.75rem',
-              lineHeight: 1,
-              borderRadius: '0.25rem',
-            }}
-          >
-            ▼
-          </button>
-        </div>
-      )}
-
-      {/* Content */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: issue.description ? '0.375rem' : 0, flexWrap: 'wrap' }}>
-          <span
-            style={{
-              fontSize: '0.9375rem',
-              fontWeight: 500,
-              color: 'var(--color-text-primary)',
-            }}
-          >
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', flex: 1, minWidth: 0 }}>
+          <span style={{ fontSize: '0.9375rem', fontWeight: 500, color: 'var(--color-text-primary)' }}>
             {issue.title}
           </span>
-          {/* Revealed status badge */}
           <span
             style={{
               fontSize: '0.6875rem',
               fontWeight: 600,
               padding: '0.125rem 0.5rem',
               borderRadius: '9999px',
-              backgroundColor: issue.revealed ? 'var(--color-success-badge-bg)' : 'var(--color-warning-badge-bg)',
-              color: issue.revealed ? 'var(--color-success)' : 'var(--color-warning)',
+              backgroundColor: 'var(--color-warning-badge-bg)',
+              color: 'var(--color-warning)',
               letterSpacing: '0.03em',
               textTransform: 'uppercase',
             }}
           >
-            {issue.revealed ? 'Revealed' : 'Voting'}
+            Voting
           </span>
         </div>
-        {issue.externalUrl && (
-          <a
-            href={normalizeUrl(issue.externalUrl)}
-            target="_blank"
-            rel="noopener noreferrer"
-            title={issue.externalUrl}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.25rem',
-              fontSize: '0.75rem',
-              color: 'var(--color-primary)',
-              textDecoration: 'none',
-              marginBottom: issue.description ? '0.375rem' : 0,
-            }}
-          >
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M5 2H2a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V7" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M8 1h3m0 0v3m0-3L5.5 6.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            {getExternalLinkLabel(issue.externalUrl)}
-          </a>
-        )}
-        {issue.description && (
-          <p
-            style={{
-              margin: '0 0 0.5rem 0',
-              fontSize: '0.8125rem',
-              color: 'var(--color-text-secondary)',
-              lineHeight: 1.5,
-            }}
-          >
-            {issue.description}
-          </p>
-        )}
-        {/* Voter avatars */}
-        {voters.length > 0 && (
-          <div style={{ display: 'flex', gap: '0.25rem', marginTop: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-            {voters.map(([uid, voter]) => (
-              <VoterAvatar
-                key={uid}
-                displayName={voter.displayName}
-                photoURL={voter.photoURL}
-                value={issue.revealed ? (voter.value ?? null) : null}
-              />
-            ))}
-          </div>
-        )}
+        {deleteButtonEl}
+      </div>
 
-        {/* Fibonacci average — shown after reveal */}
-        {fibAverage !== null && (
-          <div style={{ marginTop: '0.625rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>Average:</span>
-              <span
-                style={{
-                  fontSize: '1rem',
-                  fontWeight: 700,
-                  color: 'var(--color-success)',
-                  backgroundColor: 'var(--color-success-chip-bg)',
-                  border: '1px solid var(--color-success-chip-border)',
-                  borderRadius: '0.375rem',
-                  padding: '0.125rem 0.625rem',
-                  lineHeight: 1.5,
-                }}
-              >
-                {fibAverage}
-              </span>
-            </div>
-            {getReadinessLabel(fibAverage) && (
-              <span
-                style={{
-                  display: 'inline-block',
-                  marginTop: '0.375rem',
-                  borderLeft: '2px solid var(--color-primary)',
-                  paddingLeft: '0.5rem',
-                  fontSize: '0.75rem',
-                  color: 'var(--color-text-secondary)',
-                  lineHeight: 1.4,
-                }}
-              >
-                {getReadinessLabel(fibAverage)}
-              </span>
-            )}
-          </div>
-        )}
+      {externalLinkEl}
 
-        {/* Reveal button — owner only, not yet revealed */}
-        {isOwner && !issue.revealed && (
+      {issue.description && (
+        <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.8125rem', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
+          {issue.description}
+        </p>
+      )}
+
+      {/* Voter avatars — shown above voting buttons */}
+      {voters.length > 0 && (
+        <div style={{ display: 'flex', gap: '0.25rem', marginBottom: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          {voters.map(([uid, voter]) => (
+            <VoterAvatar
+              key={uid}
+              displayName={voter.displayName}
+              photoURL={voter.photoURL}
+              value={null}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Voting panel */}
+      {currentUserId && isMember && (
+        <div>
+          <div style={{ display: 'flex', gap: '0.375rem', flexWrap: 'wrap' }}>
+            {POKER_VALUES.map((v) => {
+              const selected = myVote === v
+              return (
+                <button
+                  key={v}
+                  onClick={() => onVote(v)}
+                  title={`Vote ${v}`}
+                  style={{
+                    width: '2.25rem',
+                    height: '3rem',
+                    border: selected
+                      ? '2px solid var(--color-primary)'
+                      : '1px solid var(--color-border-default)',
+                    borderRadius: '0.375rem',
+                    backgroundColor: selected ? 'var(--color-primary)' : 'var(--color-bg-elevated)',
+                    color: selected ? 'var(--color-text-inverse)' : 'var(--color-text-secondary)',
+                    fontSize: '0.875rem',
+                    fontWeight: selected ? 700 : 400,
+                    cursor: 'pointer',
+                    transition: 'background-color 0.1s, border-color 0.1s, color 0.1s',
+                  }}
+                >
+                  {v}
+                </button>
+              )
+            })}
+          </div>
+          {myVote !== null && getReadinessLabel(Number(myVote)) && (
+            <span
+              style={{
+                display: 'inline-block',
+                marginTop: '0.375rem',
+                borderLeft: '2px solid var(--color-primary)',
+                paddingLeft: '0.5rem',
+                fontSize: '0.75rem',
+                color: 'var(--color-text-secondary)',
+                lineHeight: 1.4,
+              }}
+            >
+              {getReadinessLabel(Number(myVote))}
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Bottom row: vote count left, reveal button right */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.75rem' }}>
+        <span style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)' }}>
+          {voters.length} {voters.length === 1 ? 'vote' : 'votes'}
+        </span>
+        {isOwner && (
           <button
             onClick={onReveal}
             style={{
-              marginTop: '0.75rem',
               padding: '0.375rem 0.875rem',
-              border: '1px solid var(--color-primary)',
+              border: 'none',
               borderRadius: '0.5rem',
-              backgroundColor: 'transparent',
-              color: 'var(--color-primary)',
+              backgroundColor: 'var(--color-primary)',
+              color: 'var(--color-text-inverse)',
               fontSize: '0.8125rem',
               fontWeight: 500,
               cursor: 'pointer',
@@ -952,99 +1046,7 @@ function IssueRow({ issue, index, total, isOwner, isMember, currentUserId, onMov
             Reveal votes
           </button>
         )}
-
-        {/* Reopen button — owner only, already revealed */}
-        {isOwner && issue.revealed && (
-          <button
-            onClick={onReopen}
-            style={{
-              marginTop: '0.75rem',
-              padding: '0.375rem 0.875rem',
-              border: '1px solid var(--color-warning)',
-              borderRadius: '0.5rem',
-              backgroundColor: 'transparent',
-              color: 'var(--color-warning)',
-              fontSize: '0.8125rem',
-              fontWeight: 500,
-              cursor: 'pointer',
-            }}
-          >
-            Reopen
-          </button>
-        )}
-
-        {/* Voting panel — only shown when not yet revealed and user is a member */}
-        {!issue.revealed && currentUserId && isMember && (
-          <div style={{ marginTop: '0.75rem' }}>
-            <div style={{ display: 'flex', gap: '0.375rem', flexWrap: 'wrap' }}>
-              {POKER_VALUES.map((v) => {
-                const selected = myVote === v
-                return (
-                  <button
-                    key={v}
-                    onClick={() => onVote(v)}
-                    title={`Vote ${v}`}
-                    style={{
-                      width: '2.25rem',
-                      height: '3rem',
-                      border: selected
-                        ? '2px solid var(--color-primary)'
-                        : '1px solid var(--color-border-default)',
-                      borderRadius: '0.375rem',
-                      backgroundColor: selected
-                        ? 'var(--color-primary)'
-                        : 'var(--color-bg-elevated)',
-                      color: selected ? 'var(--color-text-inverse)' : 'var(--color-text-secondary)',
-                      fontSize: '0.875rem',
-                      fontWeight: selected ? 700 : 400,
-                      cursor: 'pointer',
-                      transition: 'background-color 0.1s, border-color 0.1s, color 0.1s',
-                    }}
-                  >
-                    {v}
-                  </button>
-                )
-              })}
-            </div>
-            {myVote !== null && getReadinessLabel(Number(myVote)) && (
-              <span
-                style={{
-                  display: 'inline-block',
-                  marginTop: '0.375rem',
-                  borderLeft: '2px solid var(--color-primary)',
-                  paddingLeft: '0.5rem',
-                  fontSize: '0.75rem',
-                  color: 'var(--color-text-secondary)',
-                  lineHeight: 1.4,
-                }}
-              >
-                {getReadinessLabel(Number(myVote))}
-              </span>
-            )}
-          </div>
-        )}
       </div>
-
-      {/* Delete button */}
-      {isOwner && (
-        <button
-          onClick={onDelete}
-          title="Delete issue"
-          style={{
-            flexShrink: 0,
-            background: 'none',
-            border: 'none',
-            color: 'var(--color-text-muted)',
-            cursor: 'pointer',
-            padding: '0.125rem 0.25rem',
-            fontSize: '0.875rem',
-            borderRadius: '0.25rem',
-            lineHeight: 1,
-          }}
-        >
-          ✕
-        </button>
-      )}
     </div>
   )
 }
