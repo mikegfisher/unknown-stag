@@ -7,7 +7,7 @@ import { useSession } from '../hooks/useSession'
 import { useIssues } from '../hooks/useIssues'
 import type { Issue } from '../hooks/useIssues'
 import { roundUpToFibonacci } from '../lib/fibonacci'
-import { ReadinessGuide } from '../components/ReadinessGuide'
+import { ReadinessGuide, getReadinessLabel } from '../components/ReadinessGuide'
 
 export default function SessionDetail() {
   const { sessionId } = useParams<{ sessionId: string }>()
@@ -811,22 +811,39 @@ function IssueRow({ issue, index, total, isOwner, isMember, currentUserId, onMov
 
         {/* Fibonacci average — shown after reveal */}
         {fibAverage !== null && (
-          <div style={{ marginTop: '0.625rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>Average:</span>
-            <span
-              style={{
-                fontSize: '1rem',
-                fontWeight: 700,
-                color: 'var(--color-success)',
-                backgroundColor: 'var(--color-success-chip-bg)',
-                border: '1px solid var(--color-success-chip-border)',
-                borderRadius: '0.375rem',
-                padding: '0.125rem 0.625rem',
-                lineHeight: 1.5,
-              }}
-            >
-              {fibAverage}
-            </span>
+          <div style={{ marginTop: '0.625rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>Average:</span>
+              <span
+                style={{
+                  fontSize: '1rem',
+                  fontWeight: 700,
+                  color: 'var(--color-success)',
+                  backgroundColor: 'var(--color-success-chip-bg)',
+                  border: '1px solid var(--color-success-chip-border)',
+                  borderRadius: '0.375rem',
+                  padding: '0.125rem 0.625rem',
+                  lineHeight: 1.5,
+                }}
+              >
+                {fibAverage}
+              </span>
+            </div>
+            {getReadinessLabel(fibAverage) && (
+              <span
+                style={{
+                  display: 'inline-block',
+                  marginTop: '0.375rem',
+                  borderLeft: '2px solid var(--color-primary)',
+                  paddingLeft: '0.5rem',
+                  fontSize: '0.75rem',
+                  color: 'var(--color-text-secondary)',
+                  lineHeight: 1.4,
+                }}
+              >
+                {getReadinessLabel(fibAverage)}
+              </span>
+            )}
           </div>
         )}
 
@@ -852,35 +869,52 @@ function IssueRow({ issue, index, total, isOwner, isMember, currentUserId, onMov
 
         {/* Voting panel — only shown when not yet revealed and user is a member */}
         {!issue.revealed && currentUserId && isMember && (
-          <div style={{ display: 'flex', gap: '0.375rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
-            {POKER_VALUES.map((v) => {
-              const selected = myVote === v
-              return (
-                <button
-                  key={v}
-                  onClick={() => onVote(v)}
-                  title={`Vote ${v}`}
-                  style={{
-                    width: '2.25rem',
-                    height: '3rem',
-                    border: selected
-                      ? '2px solid var(--color-primary)'
-                      : '1px solid var(--color-border-default)',
-                    borderRadius: '0.375rem',
-                    backgroundColor: selected
-                      ? 'var(--color-primary)'
-                      : 'var(--color-bg-elevated)',
-                    color: selected ? 'var(--color-text-inverse)' : 'var(--color-text-secondary)',
-                    fontSize: '0.875rem',
-                    fontWeight: selected ? 700 : 400,
-                    cursor: 'pointer',
-                    transition: 'background-color 0.1s, border-color 0.1s, color 0.1s',
-                  }}
-                >
-                  {v}
-                </button>
-              )
-            })}
+          <div style={{ marginTop: '0.75rem' }}>
+            <div style={{ display: 'flex', gap: '0.375rem', flexWrap: 'wrap' }}>
+              {POKER_VALUES.map((v) => {
+                const selected = myVote === v
+                return (
+                  <button
+                    key={v}
+                    onClick={() => onVote(v)}
+                    title={`Vote ${v}`}
+                    style={{
+                      width: '2.25rem',
+                      height: '3rem',
+                      border: selected
+                        ? '2px solid var(--color-primary)'
+                        : '1px solid var(--color-border-default)',
+                      borderRadius: '0.375rem',
+                      backgroundColor: selected
+                        ? 'var(--color-primary)'
+                        : 'var(--color-bg-elevated)',
+                      color: selected ? 'var(--color-text-inverse)' : 'var(--color-text-secondary)',
+                      fontSize: '0.875rem',
+                      fontWeight: selected ? 700 : 400,
+                      cursor: 'pointer',
+                      transition: 'background-color 0.1s, border-color 0.1s, color 0.1s',
+                    }}
+                  >
+                    {v}
+                  </button>
+                )
+              })}
+            </div>
+            {myVote !== null && getReadinessLabel(Number(myVote)) && (
+              <span
+                style={{
+                  display: 'inline-block',
+                  marginTop: '0.375rem',
+                  borderLeft: '2px solid var(--color-primary)',
+                  paddingLeft: '0.5rem',
+                  fontSize: '0.75rem',
+                  color: 'var(--color-text-secondary)',
+                  lineHeight: 1.4,
+                }}
+              >
+                {getReadinessLabel(Number(myVote))}
+              </span>
+            )}
           </div>
         )}
       </div>
