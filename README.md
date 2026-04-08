@@ -11,8 +11,7 @@ Planning poker is a technique for estimating the level of effort for tasks or us
 Points measure level of effort, not time. Like miles on a road trip — the same distance can take very different amounts of time depending on conditions — points represent relative complexity. Once a team calibrates their velocity, points become a reliable planning tool.
 
 ## Live URLs
-- https://stag.mikegfisher.com
-- https://unknown-stag.firebaseapp.com
+- https://asyncast-6b51e.web.app/dashboard
 
 ## Setup
 
