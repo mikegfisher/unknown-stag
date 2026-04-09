@@ -5,6 +5,8 @@ import { db } from '../lib/firebase'
 import { useAuth } from '../hooks/useAuth'
 import { useSessions } from '../hooks/useSessions'
 import type { Session } from '../hooks/useSessions'
+import { SCORING_PROFILE_OPTIONS } from '../lib/scoringProfiles'
+import type { ScoringProfile } from '../lib/scoringProfiles'
 
 export default function Dashboard() {
   const { user, loading: authLoading, signOut } = useAuth()
@@ -12,6 +14,7 @@ export default function Dashboard() {
   const navigate = useNavigate()
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [newSessionName, setNewSessionName] = useState('')
+  const [newScoringProfile, setNewScoringProfile] = useState<ScoringProfile>('fibonacci')
   const [creating, setCreating] = useState(false)
   const [sessionToDelete, setSessionToDelete] = useState<Session | null>(null)
   const [deleting, setDeleting] = useState(false)
@@ -28,6 +31,7 @@ export default function Dashboard() {
         openIssues: 0,
         revealedIssues: 0,
         inviteToken: crypto.randomUUID(),
+        scoringProfile: newScoringProfile,
         createdAt: Timestamp.now(),
       })
       setNewSessionName('')
@@ -51,6 +55,7 @@ export default function Dashboard() {
 
   function openCreateModal() {
     setNewSessionName('')
+    setNewScoringProfile('fibonacci')
     setShowCreateModal(true)
   }
 
@@ -273,6 +278,37 @@ export default function Dashboard() {
                 outline: 'none',
               }}
             />
+            <div style={{ marginBottom: '1rem' }}>
+              <div style={{ fontSize: '0.8125rem', fontWeight: 500, color: 'var(--color-text-secondary)', marginBottom: '0.5rem' }}>
+                Scoring profile
+              </div>
+              <div style={{ display: 'flex', gap: '0.375rem' }}>
+                {SCORING_PROFILE_OPTIONS.map((opt) => {
+                  const selected = newScoringProfile === opt.value
+                  return (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setNewScoringProfile(opt.value)}
+                      style={{
+                        flex: 1,
+                        padding: '0.5rem 0.25rem',
+                        border: selected ? '2px solid var(--color-primary)' : '1px solid var(--color-border-default)',
+                        borderRadius: '0.375rem',
+                        backgroundColor: selected ? 'var(--color-primary)' : 'var(--color-bg-surface)',
+                        color: selected ? 'var(--color-text-inverse)' : 'var(--color-text-secondary)',
+                        fontSize: '0.75rem',
+                        fontWeight: selected ? 600 : 400,
+                        cursor: 'pointer',
+                        transition: 'all 0.1s',
+                      }}
+                    >
+                      {opt.label}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
             <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
               <button
                 onClick={closeCreateModal}

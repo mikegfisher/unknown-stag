@@ -7,6 +7,7 @@ import {
 } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import type { User } from 'firebase/auth'
+import type { ScoringProfile } from '../lib/scoringProfiles'
 
 export interface Session {
   id: string
@@ -17,6 +18,7 @@ export interface Session {
   openIssues: number
   revealedIssues: number
   inviteToken?: string
+  scoringProfile?: ScoringProfile
   createdAt: { toMillis: () => number } | null
 }
 
