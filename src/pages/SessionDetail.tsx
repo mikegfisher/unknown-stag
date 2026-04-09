@@ -7,7 +7,8 @@ import { useSession } from '../hooks/useSession'
 import { useIssues } from '../hooks/useIssues'
 import type { Issue } from '../hooks/useIssues'
 import { roundUpToFibonacci } from '../lib/fibonacci'
-import { ReadinessGuide, getReadinessLabel } from '../components/ReadinessGuide'
+import { getProfileLabel, VOTE_VALUES, SCORING_PROFILE_OPTIONS } from '../lib/scoringProfiles'
+import type { ScoringProfile } from '../lib/scoringProfiles'
 
 export default function SessionDetail() {
   const { sessionId } = useParams<{ sessionId: string }>()
@@ -30,9 +31,13 @@ export default function SessionDetail() {
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [inviteLinkCopied, setInviteLinkCopied] = useState(false)
   const [generatingToken, setGeneratingToken] = useState(false)
+  const [showProfileModal, setShowProfileModal] = useState(false)
+  const [pendingProfile, setPendingProfile] = useState<ScoringProfile>('fibonacci')
 
   const isOwner = user && session && session.creator_uid === user.uid
   const isMember = user && session ? session.memberIds.includes(user.uid) : false
+  const scoringProfile: ScoringProfile = session?.scoringProfile ?? 'fibonacci'
+  const hasAnyVotes = issues.some((i) => Object.keys(i.votes ?? {}).length > 0)
 
   // Auto-join when visiting with a valid invite token
   const joinedRef = useRef(false)
@@ -119,6 +124,19 @@ export default function SessionDetail() {
     setNewDescription('')
     setNewExternalUrl('')
     setShowAddModal(true)
+  }
+
+  function openProfileModal() {
+    setPendingProfile(scoringProfile)
+    setShowProfileModal(true)
+  }
+
+  async function handleUpdateProfile() {
+    if (!session) return
+    await updateDoc(doc(db, 'sessions', session.id), {
+      scoringProfile: pendingProfile,
+    })
+    setShowProfileModal(false)
   }
 
   if (sessionLoading) {
@@ -243,6 +261,47 @@ export default function SessionDetail() {
           </div>
         </div>
 
+        {/* Scoring profile badge */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', marginTop: '-1rem' }}>
+          <span style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>Scoring profile:</span>
+          <span
+            style={{
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              padding: '0.125rem 0.5rem',
+              borderRadius: '9999px',
+              backgroundColor: 'var(--color-bg-elevated)',
+              border: '1px solid var(--color-border-default)',
+              color: 'var(--color-text-secondary)',
+            }}
+          >
+            {SCORING_PROFILE_OPTIONS.find((o) => o.value === scoringProfile)?.label ?? 'Fibonacci'}
+          </span>
+          {isOwner && !hasAnyVotes && (
+            <button
+              onClick={openProfileModal}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--color-primary)',
+                fontSize: '0.8125rem',
+                cursor: 'pointer',
+                padding: 0,
+              }}
+            >
+              Change
+            </button>
+          )}
+          {isOwner && hasAnyVotes && (
+            <span
+              title="Scoring profile can't be changed after votes have been cast"
+              style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', cursor: 'default' }}
+            >
+              (locked)
+            </span>
+          )}
+        </div>
+
         {/* Non-member notice */}
         {!isMember && user && !inviteToken && (
           <div
@@ -311,6 +370,7 @@ export default function SessionDetail() {
                 isOwner={!!isOwner}
                 isMember={!!isMember}
                 currentUserId={user?.uid ?? null}
+                scoringProfile={scoringProfile}
                 onDelete={() => setIssueToDelete(issue)}
                 onVote={(value) => castVote(issue.id, value)}
                 onReveal={() => revealVotes(issue.id)}
@@ -333,6 +393,7 @@ export default function SessionDetail() {
                 isOwner={!!isOwner}
                 isMember={!!isMember}
                 currentUserId={user?.uid ?? null}
+                scoringProfile={scoringProfile}
                 onDelete={() => setIssueToDelete(issue)}
                 onVote={(value) => castVote(issue.id, value)}
                 onReveal={() => revealVotes(issue.id)}
@@ -703,7 +764,95 @@ export default function SessionDetail() {
         </div>
       )}
 
-      <ReadinessGuide />
+      {/* Change scoring profile modal */}
+      {showProfileModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Change scoring profile"
+          onClick={(e) => { if (e.target === e.currentTarget) setShowProfileModal(false) }}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'var(--color-overlay)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 50,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: 'var(--color-bg-elevated)',
+              border: '1px solid var(--color-border-default)',
+              borderRadius: '0.75rem',
+              padding: '1.5rem',
+              width: '100%',
+              maxWidth: '400px',
+            }}
+          >
+            <h2 style={{ margin: '0 0 1rem 0', fontSize: '1.125rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+              Change scoring profile
+            </h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.25rem' }}>
+              {SCORING_PROFILE_OPTIONS.map((opt) => {
+                const selected = pendingProfile === opt.value
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setPendingProfile(opt.value)}
+                    style={{
+                      padding: '0.75rem 1rem',
+                      border: selected ? '2px solid var(--color-primary)' : '1px solid var(--color-border-default)',
+                      borderRadius: '0.5rem',
+                      backgroundColor: selected ? 'var(--color-primary)' : 'var(--color-bg-surface)',
+                      color: selected ? 'var(--color-text-inverse)' : 'var(--color-text-secondary)',
+                      fontSize: '0.875rem',
+                      fontWeight: selected ? 600 : 400,
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                    }}
+                  >
+                    {opt.label}
+                  </button>
+                )
+              })}
+            </div>
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setShowProfileModal(false)}
+                style={{
+                  padding: '0.5rem 1rem',
+                  border: '1px solid var(--color-border-default)',
+                  borderRadius: '0.5rem',
+                  backgroundColor: 'transparent',
+                  color: 'var(--color-text-secondary)',
+                  fontSize: '0.875rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUpdateProfile}
+                style={{
+                  padding: '0.5rem 1rem',
+                  border: 'none',
+                  borderRadius: '0.5rem',
+                  backgroundColor: 'var(--color-primary)',
+                  color: 'var(--color-text-inverse)',
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                }}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -726,27 +875,28 @@ function getExternalLinkLabel(url: string): string {
   }
 }
 
-const POKER_VALUES = ['1', '2', '3', '5', '8']
-
 interface IssueRowProps {
   issue: Issue
   isOwner: boolean
   isMember: boolean
   currentUserId: string | null
+  scoringProfile: ScoringProfile
   onDelete: () => void
   onVote: (value: string) => void
   onReveal: () => void
   onReopen: () => void
 }
 
-function IssueRow({ issue, isOwner, isMember, currentUserId, onDelete, onVote, onReveal, onReopen }: IssueRowProps) {
+function IssueRow({ issue, isOwner, isMember, currentUserId, scoringProfile, onDelete, onVote, onReveal, onReopen }: IssueRowProps) {
   const voters = Object.entries(issue.votes ?? {})
   const myVote = currentUserId ? issue.votes?.[currentUserId]?.value ?? null : null
 
   const fibAverage: number | null = (() => {
     if (!issue.revealed || voters.length === 0) return null
     const nums = voters
-      .map(([, v]) => Number(v.value))
+      .map(([, v]) => v.value)
+      .filter((v): v is string => v !== null && v !== 'X')
+      .map(Number)
       .filter((n) => !isNaN(n) && n > 0)
     if (nums.length === 0) return null
     const avg = nums.reduce((a, b) => a + b, 0) / nums.length
@@ -842,19 +992,29 @@ function IssueRow({ issue, isOwner, isMember, currentUserId, onDelete, onVote, o
         {/* Voter list */}
         {voters.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.25rem' }}>
-            {voters.map(([uid, voter]) => (
-              <div key={uid} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <VoterAvatar displayName={voter.displayName} photoURL={voter.photoURL} value={null} />
-                  <span style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
-                    {voter.displayName ?? 'Voter'}
+            {voters.map(([uid, voter]) => {
+              const isAbstain = voter.value === 'X'
+              return (
+                <div key={uid} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <VoterAvatar displayName={voter.displayName} photoURL={voter.photoURL} value={null} />
+                    <span style={{ fontSize: '0.875rem', color: isAbstain ? 'var(--color-text-muted)' : 'var(--color-text-secondary)' }}>
+                      {voter.displayName ?? 'Voter'}
+                    </span>
+                  </div>
+                  <span
+                    style={{
+                      fontSize: '0.875rem',
+                      fontWeight: isAbstain ? 400 : 600,
+                      fontStyle: isAbstain ? 'italic' : 'normal',
+                      color: isAbstain ? 'var(--color-text-muted)' : 'var(--color-text-primary)',
+                    }}
+                  >
+                    {isAbstain ? 'X' : getProfileLabel(scoringProfile, voter.value ?? '')}
                   </span>
                 </div>
-                <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                  {voter.value}
-                </span>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
 
@@ -877,22 +1037,8 @@ function IssueRow({ issue, isOwner, isMember, currentUserId, onDelete, onVote, o
                   flexShrink: 0,
                 }}
               >
-                {fibAverage}
+                {getProfileLabel(scoringProfile, String(fibAverage))}
               </span>
-              {getReadinessLabel(fibAverage) && (
-                <span
-                  style={{
-                    borderLeft: '2px solid var(--color-primary)',
-                    paddingLeft: '0.5rem',
-                    fontSize: '0.75rem',
-                    color: 'var(--color-text-secondary)',
-                    lineHeight: 1.4,
-                    flex: 1,
-                  }}
-                >
-                  {getReadinessLabel(fibAverage)}
-                </span>
-              )}
             </>
           )}
           {isOwner && (
@@ -979,16 +1125,18 @@ function IssueRow({ issue, isOwner, isMember, currentUserId, onDelete, onVote, o
       {currentUserId && isMember && (
         <div>
           <div style={{ display: 'flex', gap: '0.375rem', flexWrap: 'wrap' }}>
-            {POKER_VALUES.map((v) => {
+            {VOTE_VALUES.map((v) => {
               const selected = myVote === v
+              const label = getProfileLabel(scoringProfile, v)
               return (
                 <button
                   key={v}
                   onClick={() => onVote(v)}
-                  title={`Vote ${v}`}
+                  title={`Vote ${label}`}
                   style={{
-                    width: '2.25rem',
+                    minWidth: '2.25rem',
                     height: '3rem',
+                    padding: '0 0.5rem',
                     border: selected
                       ? '2px solid var(--color-primary)'
                       : '1px solid var(--color-border-default)',
@@ -1001,26 +1149,11 @@ function IssueRow({ issue, isOwner, isMember, currentUserId, onDelete, onVote, o
                     transition: 'background-color 0.1s, border-color 0.1s, color 0.1s',
                   }}
                 >
-                  {v}
+                  {label}
                 </button>
               )
             })}
           </div>
-          {myVote !== null && getReadinessLabel(Number(myVote)) && (
-            <span
-              style={{
-                display: 'inline-block',
-                marginTop: '0.375rem',
-                borderLeft: '2px solid var(--color-primary)',
-                paddingLeft: '0.5rem',
-                fontSize: '0.75rem',
-                color: 'var(--color-text-secondary)',
-                lineHeight: 1.4,
-              }}
-            >
-              {getReadinessLabel(Number(myVote))}
-            </span>
-          )}
         </div>
       )}
 
