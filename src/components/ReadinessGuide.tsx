@@ -5,7 +5,7 @@ export const READINESS_SCALE = [
   {
     value: 1,
     label: 'Fully defined',
-    description: 'Clear acceptance criteria, right-sized, no open questions. Ready for Claude to implement immediately.',
+    description: 'Clear acceptance criteria, right-sized, no open questions. Ready to implement immediately.',
   },
   {
     value: 2,
