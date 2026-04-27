@@ -92,6 +92,34 @@ export function useIssues(sessionId: string | undefined, user: User | null) {
     })
   }
 
+  async function addIssues(items: Array<{ title: string; externalUrl?: string }>) {
+    if (!sessionId || !user || items.length === 0) return
+    const startOrder =
+      issues.length > 0 ? Math.max(...issues.map((i) => i.order)) + 1 : 0
+    const batch = writeBatch(db)
+    const issuesCol = collection(db, 'sessions', sessionId, 'issues')
+    items.forEach((item, idx) => {
+      const ref = doc(issuesCol)
+      const issueData: Record<string, unknown> = {
+        title: item.title.trim(),
+        description: '',
+        order: startOrder + idx,
+        revealed: false,
+        votes: {},
+        creator_uid: user.uid,
+        createdAt: serverTimestamp(),
+      }
+      if (item.externalUrl?.trim()) {
+        issueData.externalUrl = item.externalUrl.trim()
+      }
+      batch.set(ref, issueData)
+    })
+    batch.update(doc(db, 'sessions', sessionId), {
+      openIssues: increment(items.length),
+    })
+    await batch.commit()
+  }
+
   async function deleteIssue(issueId: string) {
     if (!sessionId) return
     const issue = issues.find((i) => i.id === issueId)
@@ -155,5 +183,5 @@ export function useIssues(sessionId: string | undefined, user: User | null) {
     })
   }
 
-  return { issues, loading, error, addIssue, deleteIssue, moveIssue, castVote, revealVotes, reopenIssue }
+  return { issues, loading, error, addIssue, addIssues, deleteIssue, moveIssue, castVote, revealVotes, reopenIssue }
 }
