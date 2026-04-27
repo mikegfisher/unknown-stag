@@ -9,6 +9,7 @@ import type { Issue } from '../hooks/useIssues'
 import { roundUpToFibonacci } from '../lib/fibonacci'
 import { getProfileLabel, VOTE_VALUES, SCORING_PROFILE_OPTIONS } from '../lib/scoringProfiles'
 import type { ScoringProfile } from '../lib/scoringProfiles'
+import { parseIssueUrls } from '../lib/parseIssueUrl'
 
 export default function SessionDetail() {
   const { sessionId } = useParams<{ sessionId: string }>()
@@ -16,7 +17,7 @@ export default function SessionDetail() {
   const [searchParams, setSearchParams] = useSearchParams()
   const { user } = useAuth()
   const { session, loading: sessionLoading, error: sessionError } = useSession(sessionId)
-  const { issues, loading: issuesLoading, error: issuesError, addIssue, deleteIssue, castVote, revealVotes, reopenIssue } =
+  const { issues, loading: issuesLoading, error: issuesError, addIssue, addIssues, deleteIssue, castVote, revealVotes, reopenIssue } =
     useIssues(sessionId, user)
 
   const [showAddModal, setShowAddModal] = useState(false)
@@ -33,6 +34,10 @@ export default function SessionDetail() {
   const [generatingToken, setGeneratingToken] = useState(false)
   const [showProfileModal, setShowProfileModal] = useState(false)
   const [pendingProfile, setPendingProfile] = useState<ScoringProfile>('fibonacci')
+  const [showFromLinksModal, setShowFromLinksModal] = useState(false)
+  const [linkInput, setLinkInput] = useState('')
+  const [fromLinksAdding, setFromLinksAdding] = useState(false)
+  const [fromLinksError, setFromLinksError] = useState<string | null>(null)
 
   const isOwner = user && session && session.creator_uid === user.uid
   const isMember = user && session ? session.memberIds.includes(user.uid) : false
@@ -139,6 +144,28 @@ export default function SessionDetail() {
     setShowProfileModal(false)
   }
 
+  function openFromLinksModal() {
+    setLinkInput('')
+    setFromLinksError(null)
+    setShowFromLinksModal(true)
+  }
+
+  async function handleAddFromLinks() {
+    const items = parseIssueUrls(linkInput)
+    if (items.length === 0) return
+    setFromLinksAdding(true)
+    setFromLinksError(null)
+    try {
+      await addIssues(items)
+      setLinkInput('')
+      setShowFromLinksModal(false)
+    } catch {
+      setFromLinksError('Failed to add issues. Please try again.')
+    } finally {
+      setFromLinksAdding(false)
+    }
+  }
+
   if (sessionLoading) {
     return (
       <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-bg-page)', padding: '2rem' }}>
@@ -239,6 +266,23 @@ export default function SessionDetail() {
                 }}
               >
                 Invite
+              </button>
+            )}
+            {isOwner && (
+              <button
+                onClick={openFromLinksModal}
+                style={{
+                  backgroundColor: 'transparent',
+                  color: 'var(--color-text-secondary)',
+                  border: '1px solid var(--color-border-default)',
+                  borderRadius: '0.5rem',
+                  padding: '0.5rem 1rem',
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                }}
+              >
+                Add from links
               </button>
             )}
             {isOwner && (
@@ -619,6 +663,114 @@ export default function SessionDetail() {
               >
                 {adding ? 'Adding…' : 'Add'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add from links modal */}
+      {showFromLinksModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Add issues from links"
+          onClick={(e) => { if (e.target === e.currentTarget) setShowFromLinksModal(false) }}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'var(--color-overlay)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 50,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: 'var(--color-bg-elevated)',
+              border: '1px solid var(--color-border-default)',
+              borderRadius: '0.75rem',
+              padding: '1.5rem',
+              width: '100%',
+              maxWidth: '520px',
+            }}
+          >
+            <h2 style={{ margin: '0 0 0.375rem 0', fontSize: '1.125rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+              Add issues from links
+            </h2>
+            <p style={{ margin: '0 0 1rem 0', fontSize: '0.8125rem', color: 'var(--color-text-secondary)' }}>
+              Paste one URL per line. GitHub, Linear, and Jira links are recognized automatically.
+            </p>
+            <textarea
+              autoFocus
+              placeholder={'https://github.com/org/repo/issues/123\nhttps://linear.app/team/issue/ENG-456\nhttps://corp.atlassian.net/browse/PROJ-789'}
+              value={linkInput}
+              onChange={(e) => setLinkInput(e.target.value)}
+              rows={6}
+              style={{
+                display: 'block',
+                width: '100%',
+                boxSizing: 'border-box',
+                padding: '0.625rem 0.75rem',
+                marginBottom: fromLinksError ? '0.75rem' : '1rem',
+                backgroundColor: 'var(--color-bg-surface)',
+                border: '1px solid var(--color-border-default)',
+                borderRadius: '0.5rem',
+                color: 'var(--color-text-primary)',
+                fontSize: '0.8125rem',
+                outline: 'none',
+                resize: 'vertical',
+                fontFamily: 'inherit',
+              }}
+            />
+            {fromLinksError && (
+              <p style={{ margin: '0 0 1rem 0', fontSize: '0.8125rem', color: 'var(--color-error)' }}>
+                {fromLinksError}
+              </p>
+            )}
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setShowFromLinksModal(false)}
+                disabled={fromLinksAdding}
+                style={{
+                  padding: '0.5rem 1rem',
+                  border: '1px solid var(--color-border-default)',
+                  borderRadius: '0.5rem',
+                  backgroundColor: 'transparent',
+                  color: 'var(--color-text-secondary)',
+                  fontSize: '0.875rem',
+                  cursor: fromLinksAdding ? 'not-allowed' : 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              {(() => {
+                const count = parseIssueUrls(linkInput).length
+                const disabled = count === 0 || fromLinksAdding
+                const label = fromLinksAdding
+                  ? 'Adding…'
+                  : count === 0
+                    ? 'Add Issues'
+                    : `Add ${count} Issue${count === 1 ? '' : 's'}`
+                return (
+                  <button
+                    onClick={handleAddFromLinks}
+                    disabled={disabled}
+                    style={{
+                      padding: '0.5rem 1rem',
+                      border: 'none',
+                      borderRadius: '0.5rem',
+                      backgroundColor: disabled ? 'var(--color-bg-surface)' : 'var(--color-primary)',
+                      color: disabled ? 'var(--color-text-muted)' : 'var(--color-text-inverse)',
+                      fontSize: '0.875rem',
+                      fontWeight: 500,
+                      cursor: disabled ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    {label}
+                  </button>
+                )
+              })()}
             </div>
           </div>
         </div>
